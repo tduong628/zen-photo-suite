@@ -363,7 +363,7 @@ You are a graphic designer creating a background for a flyer.
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-6">
                 <div className="space-y-4">
                      <fieldset className="border p-4 rounded-md space-y-4">
-                        <legend className="px-2 font-semibold text-teal-800">Style Reference (Optional)</legend>
+                        <legend className="px-2 font-semibold text-amber-900">Style Reference (Optional)</legend>
                         <label className="cursor-pointer flex justify-center w-full h-32 px-4 transition bg-white border-2 border-gray-300 border-dashed rounded-md appearance-none hover:border-gray-400 focus:outline-none">
                             <span className="flex items-center space-x-2">
                                 <Icon name="upload" className="w-6 h-6 text-gray-600" />
@@ -379,19 +379,19 @@ You are a graphic designer creating a background for a flyer.
                     </fieldset>
                     
                     <fieldset className="border p-4 rounded-md space-y-4">
-                        <legend className="px-2 font-semibold text-teal-800">Header Details</legend>
+                        <legend className="px-2 font-semibold text-amber-900">Header Details</legend>
                         <div>
                             <label className="block text-sm font-medium text-gray-700">{langPack.brochureToolHeadlineLabel}</label>
-                            <input name="headline" value={formState.headline} onChange={handleInputChange} type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring focus:ring-teal-300 focus:ring-opacity-50" />
+                            <input name="headline" value={formState.headline} onChange={handleInputChange} type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-300 focus:ring-opacity-50" />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700">{langPack.brochureToolSubheadlineLabel}</label>
-                                <input name="subheadline" value={formState.subheadline} onChange={handleInputChange} type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring focus:ring-teal-300 focus:ring-opacity-50" />
+                                <input name="subheadline" value={formState.subheadline} onChange={handleInputChange} type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-300 focus:ring-opacity-50" />
                             </div>
                              <div>
                                 <label className="block text-sm font-medium text-gray-700">{langPack.brochureToolPriceLabel}</label>
-                                <input name="price" value={formState.price} onChange={handleInputChange} type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring focus:ring-teal-300 focus:ring-opacity-50" />
+                                <input name="price" value={formState.price} onChange={handleInputChange} type="text" className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-300 focus:ring-opacity-50" />
                             </div>
                         </div>
                     </fieldset>
@@ -403,14 +403,14 @@ You are a graphic designer creating a background for a flyer.
                                 <button
                                     key={style.id}
                                     onClick={() => setSelectedStyle(style.id)}
-                                    className={`p-3 text-sm font-medium border rounded-lg transition-colors ${selectedStyle === style.id ? 'bg-teal-100 border-teal-500 text-teal-900 ring-2 ring-teal-300' : 'bg-white border-gray-300 text-gray-700 hover:border-teal-400'}`}
+                                    className={`p-3 text-sm font-medium border rounded-lg transition-colors ${selectedStyle === style.id ? 'bg-amber-100 border-amber-500 text-amber-900 ring-2 ring-amber-300' : 'bg-white border-gray-300 text-gray-700 hover:border-amber-500'}`}
                                 >
                                     {langPack[style.key]}
                                 </button>
                             ))}
                         </div>
                     </div>
-                    <button onClick={handleGeneratePreview} disabled={isLoading || isUpscaling} className="w-full px-6 py-3 text-white font-semibold bg-teal-700 rounded-lg shadow-md hover:bg-teal-800 disabled:bg-teal-400 disabled:cursor-not-allowed transition-colors">
+                    <button onClick={handleGeneratePreview} disabled={isLoading || isUpscaling} className="w-full px-6 py-3 text-white font-semibold bg-amber-800 rounded-lg shadow-md hover:bg-amber-900 disabled:bg-amber-500 disabled:cursor-not-allowed transition-colors">
                         {langPack.brochureToolGenerateBtn}
                     </button>
                 </div>
@@ -421,7 +421,7 @@ You are a graphic designer creating a background for a flyer.
                             {(isLoading || isUpscaling) && (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm z-10 text-center px-4">
                                     <Loader />
-                                    {isUpscaling && <p className="mt-4 text-xs font-bold text-teal-600 animate-pulse uppercase tracking-widest">Mastering 4K HD Print...</p>}
+                                    {isUpscaling && <p className="mt-4 text-xs font-bold text-amber-700 animate-pulse uppercase tracking-widest">Mastering 4K HD Print...</p>}
                                 </div>
                             )}
                             {finalImage && !isLoading && (
@@ -440,7 +440,7 @@ You are a graphic designer creating a background for a flyer.
                                 <p className="text-sm font-medium text-gray-600 mb-2 text-center">Choose a preview:</p>
                                 <div className="grid grid-cols-4 gap-2">
                                     {backgroundImages.map((bg, index) => (
-                                        <button key={index} onClick={() => setSelectedBg(bg)} className={`rounded-lg overflow-hidden border-2 transition-colors ${selectedBg === bg ? 'border-teal-500 ring-2 ring-teal-200' : 'border-transparent hover:border-teal-300'}`}>
+                                        <button key={index} onClick={() => setSelectedBg(bg)} className={`rounded-lg overflow-hidden border-2 transition-colors ${selectedBg === bg ? 'border-amber-500 ring-2 ring-amber-200' : 'border-transparent hover:border-amber-300'}`}>
                                             <img src={bg} alt={`Variant ${index + 1}`} className="w-full h-full object-cover"/>
                                         </button>
                                     ))}

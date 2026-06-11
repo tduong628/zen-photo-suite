@@ -149,7 +149,7 @@ Begin the HTML now.`;
                         <label className="block text-sm font-medium text-gray-700">{langPack.landingPageToneLabel}</label>
                         <div className="flex flex-wrap gap-2 mt-2">
                             {tones.map(t => (
-                                <button key={t.id} onClick={() => setTone(t.id)} className={`px-3 py-1.5 text-sm rounded-full border transition-colors duration-200 ${tone === t.id ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}>
+                                <button key={t.id} onClick={() => setTone(t.id)} className={`px-3 py-1.5 text-sm rounded-full border transition-colors duration-200 ${tone === t.id ? 'bg-amber-700 text-white border-amber-700' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}>
                                     {langPack[t.key] as string}
                                 </button>
                             ))}
@@ -160,14 +160,14 @@ Begin the HTML now.`;
                         <label className="block text-sm font-medium text-gray-700">{langPack.landingPageLayoutLabel}</label>
                         <div className="flex flex-wrap gap-2 mt-2">
                             {layouts.map(l => (
-                                <button key={l.id} onClick={() => setLayout(l.id)} className={`px-3 py-1.5 text-sm rounded-full border transition-colors duration-200 ${layout === l.id ? 'bg-teal-600 text-white border-teal-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}>
+                                <button key={l.id} onClick={() => setLayout(l.id)} className={`px-3 py-1.5 text-sm rounded-full border transition-colors duration-200 ${layout === l.id ? 'bg-amber-700 text-white border-amber-700' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}>
                                     {langPack[l.key] as string}
                                 </button>
                             ))}
                         </div>
                     </div>
 
-                    <button onClick={handleGenerateLandingPage} disabled={isLoading || !initialData || initialData.length === 0} className="w-full px-6 py-3 text-white font-semibold bg-teal-600 rounded-lg shadow-md hover:bg-teal-700 disabled:bg-teal-300 disabled:cursor-not-allowed transition-colors">
+                    <button onClick={handleGenerateLandingPage} disabled={isLoading || !initialData || initialData.length === 0} className="w-full px-6 py-3 text-white font-semibold bg-amber-700 rounded-lg shadow-md hover:bg-amber-800 disabled:bg-amber-300 disabled:cursor-not-allowed transition-colors">
                         {isLoading ? 'Generating...' : langPack.landingPageGenerateBtn}
                     </button>
                 </div>

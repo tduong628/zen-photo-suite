@@ -170,9 +170,9 @@ const SocialPostTool: React.FC<SocialPostToolProps> = ({ langPack, showNotificat
                             <p className="text-xs font-bold text-indigo-400 uppercase tracking-wide">Detected Service</p>
                             <p className="text-lg font-bold text-indigo-900 leading-tight mt-1">{analysis.serviceType}</p>
                         </div>
-                        <div className="bg-teal-50 p-4 rounded-2xl border border-emerald-100">
-                            <p className="text-xs font-bold text-teal-500 uppercase tracking-wide">Mood</p>
-                            <p className="text-lg font-bold text-teal-900 leading-tight mt-1">{analysis.mood}</p>
+                        <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100">
+                            <p className="text-xs font-bold text-amber-500 uppercase tracking-wide">Mood</p>
+                            <p className="text-lg font-bold text-amber-900 leading-tight mt-1">{analysis.mood}</p>
                         </div>
                     </div>
 
@@ -240,11 +240,11 @@ const SocialPostTool: React.FC<SocialPostToolProps> = ({ langPack, showNotificat
                 <div className="animate-fade-in space-y-6">
                     
                     {/* Feature 5: Engagement Score */}
-                    <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                    <div className="bg-gradient-to-r from-emerald-500 to-amber-500 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                         <div className="flex justify-between items-end relative z-10">
                             <div>
-                                <p className="text-emerald-100 font-medium text-sm mb-1">{langPack.socialSectionScore}</p>
+                                <p className="text-amber-100 font-medium text-sm mb-1">{langPack.socialSectionScore}</p>
                                 <div className="text-5xl font-extrabold tracking-tight">{content.viralityScore}<span className="text-2xl opacity-60">/100</span></div>
                             </div>
                             <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 max-w-[60%]">

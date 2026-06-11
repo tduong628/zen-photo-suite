@@ -457,7 +457,7 @@ Respond with ONLY a valid JSON array of objects. Each object must contain the fi
                                     <button onClick={() => handleAddPromos(selectedIdeas)} className="w-full px-4 py-2.5 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors shadow-sm">
                                         {langPack.ideaToolAddToPromoBtn}
                                     </button>
-                                    <button onClick={() => goToLandingPage(selectedIdeas)} className="w-full px-4 py-2.5 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors shadow-sm">
+                                    <button onClick={() => goToLandingPage(selectedIdeas)} className="w-full px-4 py-2.5 text-sm font-medium text-white bg-amber-700 rounded-lg hover:bg-amber-800 transition-colors shadow-sm">
                                         {langPack.ideaToolCreateLandingPageBtn}
                                     </button>
                                     <button onClick={handleCreateGraphic} className="w-full px-4 py-2.5 text-sm font-medium text-white bg-amber-600 rounded-lg hover:bg-amber-700 transition-colors shadow-sm">
@@ -486,12 +486,12 @@ Respond with ONLY a valid JSON array of objects. Each object must contain the fi
                             <h3 className="text-lg font-semibold text-gray-900">{langPack.ideaToolDeepDiveTitle}</h3>
                             <p className="text-sm text-gray-700 mt-1">{langPack.ideaToolDeepDiveDesc}</p>
                         </button>
-                        <button onClick={handleStartChatbot} className="w-full text-left p-6 bg-teal-100 border-2 border-teal-200 rounded-xl shadow-sm hover:bg-teal-200 transition-colors">
+                        <button onClick={handleStartChatbot} className="w-full text-left p-6 bg-amber-100 border-2 border-amber-200 rounded-xl shadow-sm hover:bg-amber-200 transition-colors">
                             <div className="flex items-center">
-                                <Icon name="chatbot" className="w-8 h-8 text-teal-700 mr-4" />
+                                <Icon name="chatbot" className="w-8 h-8 text-amber-800 mr-4" />
                                 <div>
-                                    <h3 className="text-lg font-semibold text-teal-900">{langPack.ideaToolChatbotTitle}</h3>
-                                    <p className="text-sm text-teal-700 mt-1">{langPack.ideaToolChatbotDesc}</p>
+                                    <h3 className="text-lg font-semibold text-amber-900">{langPack.ideaToolChatbotTitle}</h3>
+                                    <p className="text-sm text-amber-800 mt-1">{langPack.ideaToolChatbotDesc}</p>
                                 </div>
                             </div>
                         </button>
