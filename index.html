@@ -1,0 +1,197 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Zen Nail Spa</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.6/piexif.min.js"></script>
+    <style>
+      /* ── Design Tokens ─────────────────────────────────────────────── */
+      :root {
+        --color-primary:     #0F766E; /* deep jade */
+        --color-primary-lt:  #99F6E4; /* light jade */
+        --color-accent:      #B45309; /* warm amber */
+        --color-bg:          #F2FAF8; /* calm jade white */
+        --color-surface:     #FFFFFF;
+        --color-surface-2:   #ECFDF7; /* soft jade surface */
+        --color-border:      #CDEBE2;
+        --color-text:        #0A1C17; /* near-black with calm */
+        --color-text-muted:  #56766C;
+        --color-text-subtle: #A0C4B8;
+        --font-display:      'Playfair Display', Georgia, serif;
+        --font-body:         'Inter', -apple-system, sans-serif;
+        --radius-card:       1.75rem;
+        --radius-pill:       9999px;
+        --shadow-card:       0 8px 32px -4px rgba(190,24,93,0.10), 0 2px 8px -2px rgba(0,0,0,0.06);
+        --shadow-card-hover: 0 20px 48px -8px rgba(190,24,93,0.16), 0 4px 12px -2px rgba(0,0,0,0.08);
+        --shadow-nav:        0 8px 32px rgba(190,24,93,0.15), 0 2px 8px rgba(0,0,0,0.08);
+        --dur-fast:          150ms;
+        --dur-normal:        280ms;
+        --ease-spring:       cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ── Base ──────────────────────────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; }
+
+      body {
+        font-family: var(--font-body);
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Scrollbar ─────────────────────────────────────────────────── */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* ── Glass ─────────────────────────────────────────────────────── */
+      .glass-panel {
+        background: rgba(255,255,255,0.82);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        border: 1px solid rgba(255,255,255,0.6);
+      }
+
+      /* ── Inputs ────────────────────────────────────────────────────── */
+      .ios-input {
+        background-color: var(--color-surface-2);
+        border: 1.5px solid var(--color-border);
+        transition: all var(--dur-fast) ease;
+        color: var(--color-text);
+        font-family: var(--font-body);
+      }
+      .ios-input:focus {
+        background-color: var(--color-surface);
+        border-color: var(--color-primary-lt);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(190,24,93,0.12);
+      }
+
+      /* ── Press feedback ────────────────────────────────────────────── */
+      .ios-btn-press:active {
+        transform: scale(0.97);
+        opacity: 0.85;
+        transition: transform 80ms ease, opacity 80ms ease;
+      }
+
+      /* ── Display type ──────────────────────────────────────────────── */
+      .font-display { font-family: var(--font-display); }
+
+      /* ── Luxury card ───────────────────────────────────────────────── */
+      .luxury-card {
+        background: var(--color-surface);
+        border-radius: var(--radius-card);
+        box-shadow: var(--shadow-card);
+        border: 1px solid var(--color-border);
+        transition: box-shadow var(--dur-normal) var(--ease-spring),
+                    transform var(--dur-normal) var(--ease-spring);
+      }
+      .luxury-card:hover {
+        box-shadow: var(--shadow-card-hover);
+        transform: translateY(-2px);
+      }
+
+      /* ── Primary button ────────────────────────────────────────────── */
+      .btn-primary {
+        background: var(--color-primary);
+        color: #fff;
+        font-family: var(--font-body);
+        font-weight: 600;
+        letter-spacing: 0.01em;
+        transition: all var(--dur-fast) ease;
+        cursor: pointer;
+      }
+      .btn-primary:hover  { background: #0b5d56; }
+      .btn-primary:active { transform: scale(0.97); }
+
+      /* ── Section label ─────────────────────────────────────────────── */
+      .section-label {
+        font-family: var(--font-body);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-primary);
+      }
+
+      /* ── Ambient bg orbs ───────────────────────────────────────────── */
+      .orb {
+        position: fixed;
+        border-radius: 9999px;
+        pointer-events: none;
+        z-index: 0;
+        filter: blur(80px);
+      }
+
+      /* ── Animations ────────────────────────────────────────────────── */
+      @keyframes page-enter {
+        0%   { opacity: 0; transform: scale(0.96) translateY(24px); filter: blur(8px); }
+        100% { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0);  }
+      }
+      @keyframes stagger-up {
+        0%   { opacity: 0; transform: translateY(16px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fade-in {
+        0%   { opacity: 0; }
+        100% { opacity: 1; }
+      }
+      @keyframes shimmer {
+        0%   { background-position: -200% center; }
+        100% { background-position:  200% center; }
+      }
+      /* Used via inline styles in BrandingTool template grid — buttons start
+         at opacity:0 and rely on this keyframe to become visible. */
+      @keyframes ios-stagger-up {
+        0%   { opacity: 0; transform: translateY(20px) scale(0.97); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+
+      .animate-ios-home {
+        animation: page-enter 0.65s var(--ease-spring) forwards;
+      }
+      .animate-stagger-1 {
+        opacity: 0;
+        animation: stagger-up 0.55s var(--ease-spring) forwards 0.05s;
+      }
+      .animate-stagger-2 {
+        opacity: 0;
+        animation: stagger-up 0.55s var(--ease-spring) forwards 0.15s;
+      }
+      .animate-stagger-3 {
+        opacity: 0;
+        animation: stagger-up 0.55s var(--ease-spring) forwards 0.25s;
+      }
+      .animate-fade-in {
+        animation: fade-in 0.2s ease forwards;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .animate-ios-home, .animate-stagger-1, .animate-stagger-2,
+        .animate-stagger-3, .animate-fade-in {
+          animation: none !important;
+          opacity: 1 !important;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.20.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="antialiased selection:bg-teal-200 selection:text-teal-900">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Zen Nail Spa - Photo Editor (Enhanced)",
+  "description": "AI-powered photo branding and social media content generator with local Durham, NC geo-optimization.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": []
+}
