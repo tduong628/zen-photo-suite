@@ -40,14 +40,14 @@ const MainMenu: React.FC<MainMenuProps> = ({ langPack, onNavigate }) => {
                     {/* Background gradient */}
                     <div style={{
                         position: 'absolute', inset: 0,
-                        background: 'linear-gradient(135deg, #fff5f9 0%, #ffe4f0 55%, #fcd7e8 100%)',
+                        background: 'linear-gradient(135deg, #f0fdf9 0%, #d9f5ec 55%, #c3ece0 100%)',
                         borderRadius: 'inherit',
                     }} />
                     {/* Decorative orb */}
                     <div style={{
                         position: 'absolute', top: '-20%', right: '-10%',
                         width: '55%', paddingBottom: '55%',
-                        background: 'radial-gradient(circle, rgba(249,168,212,0.5) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, rgba(94,234,212,0.5) 0%, transparent 70%)',
                         filter: 'blur(24px)',
                         pointerEvents: 'none',
                     }} />
@@ -116,19 +116,19 @@ const MainMenu: React.FC<MainMenuProps> = ({ langPack, onNavigate }) => {
                 >
                     <div style={{
                         position: 'absolute', inset: 0,
-                        background: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 55%, #ddd6fe 100%)',
+                        background: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 55%, #fde68a 100%)',
                         borderRadius: 'inherit',
                     }} />
                     <div style={{
                         position: 'absolute', bottom: '-20%', right: '-10%',
                         width: '60%', paddingBottom: '60%',
-                        background: 'radial-gradient(circle, rgba(196,181,253,0.55) 0%, transparent 70%)',
+                        background: 'radial-gradient(circle, rgba(252,211,77,0.5) 0%, transparent 70%)',
                         filter: 'blur(28px)',
                         pointerEvents: 'none',
                     }} />
                     <div style={{
                         position: 'absolute', left: 0, top: 0, bottom: 0, width: '4px',
-                        background: 'linear-gradient(180deg, var(--color-accent) 0%, #a78bfa 100%)',
+                        background: 'linear-gradient(180deg, var(--color-accent) 0%, #f59e0b 100%)',
                         borderTopLeftRadius: 'var(--radius-card)',
                         borderBottomLeftRadius: 'var(--radius-card)',
                     }} />
