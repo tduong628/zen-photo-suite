@@ -1,6 +1,48 @@
 
 import { GoogleGenAI, GenerateContentResponse, Part, Modality, Type } from "@google/genai";
 
+
+// ─── Gemini Proxy ────────────────────────────────────────────────────────
+// All generateContent calls route through a private Apps Script proxy so the
+// API key never ships in this (public) bundle. Google auto-revokes any key it
+// finds in public code — the proxy is the permanent fix.
+const GEMINI_PROXY_URL = 'https://script.google.com/macros/s/AKfycbwJjnu2i1lZvVdawRUf_A81Er-9rZzyqlJd8rMGZ8JuUazdW7YqHhZg8lLQTjBjHsga9Q/exec';
+
+interface ProxyRequest {
+    model: string;
+    contents: unknown;
+    config?: Record<string, unknown>;
+}
+
+const proxyGenerateContent = async (req: ProxyRequest): Promise<GenerateContentResponse> => {
+    const { systemInstruction, tools, ...generation } = (req.config || {}) as Record<string, unknown>;
+
+    let contents: unknown = req.contents;
+    if (typeof contents === 'string') {
+        contents = [{ role: 'user', parts: [{ text: contents }] }];
+    } else if (contents && !Array.isArray(contents)) {
+        contents = [{ role: 'user', ...(contents as object) }];
+    }
+
+    const body: Record<string, unknown> = { contents };
+    if (systemInstruction) body.systemInstruction = systemInstruction;
+    if (tools) body.tools = tools;
+    if ((generation as Record<string, unknown>).imageConfig) {
+        (generation as Record<string, unknown>).responseModalities = ['TEXT', 'IMAGE'];
+    }
+    if (Object.keys(generation).length > 0) body.generationConfig = generation;
+
+    const res = await fetch(GEMINI_PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ model: req.model, body }),
+    });
+    if (!res.ok) throw new Error(`Proxy HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || 'Gemini proxy error');
+    return data as GenerateContentResponse;
+};
+
 const fileToGenerativePart = (base64: string, mimeType: string): Part => {
     return {
         inlineData: {
@@ -980,7 +1022,7 @@ export const generateDynamicThemePrompt = async (themeKeyOrDescription: string, 
 
         Respond with ONLY the final optimized prompt string.`;
 
-        const response: GenerateContentResponse = await ai.models.generateContent({
+        const response: GenerateContentResponse = await proxyGenerateContent({
             model: 'gemini-3.5-flash', 
             contents: { 
                 parts: [
@@ -1010,7 +1052,7 @@ export const generateBrandedImageService = async (prompt: string, imageBase64: s
         const count = imageSize === "2K" ? 2 : 1;
 
         const generateSingleImage = async (): Promise<string | null> => {
-            const response = await ai.models.generateContent({
+            const response = await proxyGenerateContent({
                 model: 'gemini-3-pro-image-preview',
                 contents: {
                     parts: [imagePart, textPart],
@@ -1055,7 +1097,7 @@ export const generateSocialCaptionService = async (prompt: string, imageBase64: 
         const imagePart = fileToGenerativePart(imageBase64, mimeType);
         const textPart = { text: prompt };
 
-        const response: GenerateContentResponse = await ai.models.generateContent({
+        const response: GenerateContentResponse = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: { parts: [imagePart, textPart] },
         });
@@ -1080,7 +1122,7 @@ export const analyzeSocialImage = async (imageBase64: string, mimeType: string):
         
         Return ONLY valid JSON.`;
 
-        const response: GenerateContentResponse = await ai.models.generateContent({
+        const response: GenerateContentResponse = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: { parts: [imagePart, { text: prompt }] },
             config: {
@@ -1130,7 +1172,7 @@ export const generateOmniSocialContent = async (analysis: any, tone: string, use
             "improvementTip": "string"
         }`;
 
-        const response: GenerateContentResponse = await ai.models.generateContent({
+        const response: GenerateContentResponse = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: { parts: [{ text: prompt }] },
             config: {
@@ -1148,7 +1190,7 @@ export const generateOmniSocialContent = async (analysis: any, tone: string, use
 export const generatePromoGraphicService = async (prompt: string, imageSize: "1K" | "2K" | "4K" = "1K"): Promise<string | null> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
-        const response = await ai.models.generateContent({
+        const response = await proxyGenerateContent({
             model: 'gemini-3-pro-image-preview',
             contents: { parts: [{ text: prompt }] },
             config: {
@@ -1177,7 +1219,7 @@ export const generatePromoGraphicService = async (prompt: string, imageSize: "1K
 export const generatePromoCaptionService = async (prompt: string): Promise<string | null> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
-        const response: GenerateContentResponse = await ai.models.generateContent({
+        const response: GenerateContentResponse = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: { parts: [{ text: prompt }] },
         });
@@ -1191,7 +1233,7 @@ export const generatePromoCaptionService = async (prompt: string): Promise<strin
 export const generatePromoIdeasService = async (prompt: string): Promise<string | null> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
-        const response = await ai.models.generateContent({
+        const response = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: prompt,
             config: {
@@ -1255,7 +1297,7 @@ export const generateBrochureService = async (prompt: string, imageSize: "1K" | 
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
         const generateSingleImage = async (): Promise<string | null> => {
-            const response = await ai.models.generateContent({
+            const response = await proxyGenerateContent({
                 model: 'gemini-3-pro-image-preview',
                 contents: { parts: [{ text: prompt }] },
                 config: {
@@ -1297,7 +1339,7 @@ export const describeImageService = async (base64: string, mimeType: string): Pr
     try {
         const imagePart = fileToGenerativePart(base64, mimeType);
         const textPart = { text: "Describe this image in detail, focusing on colors, composition, and mood." };
-        const response = await ai.models.generateContent({
+        const response = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: { parts: [imagePart, textPart] },
         });
@@ -1311,7 +1353,7 @@ export const describeImageService = async (base64: string, mimeType: string): Pr
 export const generateLandingPageService = async (prompt: string): Promise<string | null> => {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     try {
-        const response = await ai.models.generateContent({
+        const response = await proxyGenerateContent({
             model: 'gemini-3.5-flash',
             contents: { parts: [{ text: prompt }] },
         });
