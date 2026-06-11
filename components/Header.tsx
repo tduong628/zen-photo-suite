@@ -30,34 +30,20 @@ const Header: React.FC<HeaderProps> = ({ currentLang, onSetLang, onGoHome }) => 
         >
             <div className="max-w-2xl mx-auto px-5 h-[4.25rem] flex justify-between items-center">
                 {/* Brand mark */}
-                <button onClick={onGoHome} className="ios-btn-press flex items-center gap-3 group" aria-label="Go home">
-                    {/* Diamond accent */}
-                    <div
-                        className="flex-shrink-0 w-8 h-8 flex items-center justify-center"
-                        style={{
-                            background: 'linear-gradient(135deg, var(--color-primary) 0%, #0b5d56 100%)',
-                            borderRadius: '0.6rem',
-                            boxShadow: '0 2px 8px rgba(190,24,93,0.30)',
-                        }}
+                <button onClick={onGoHome} className="ios-btn-press flex items-center gap-2.5 group" aria-label="Go home">
+                    {/* Zen wordmark logo (transparent PNG) */}
+                    <img
+                        src={`${import.meta.env.BASE_URL}logo.png`}
+                        alt="Zen Nail Spa"
+                        className="flex-shrink-0 h-11 w-auto object-contain"
+                        style={{ filter: 'drop-shadow(0 1px 2px rgba(10,28,23,0.12))' }}
+                    />
+                    <span
+                        className="section-label self-end mb-1.5"
+                        style={{ color: 'var(--color-primary)', fontSize: '0.58rem' }}
                     >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                            <path d="M8 1.5L10.5 6.5L15.5 7.5L11.5 11.5L12.5 16.5L8 14L3.5 16.5L4.5 11.5L0.5 7.5L5.5 6.5L8 1.5Z" fill="white" opacity="0.9"/>
-                        </svg>
-                    </div>
-                    <div className="flex flex-col items-start leading-none">
-                        <span
-                            className="font-display text-[1.05rem] font-semibold leading-none tracking-tight"
-                            style={{ color: 'var(--color-text)' }}
-                        >
-                            Zen Nail Spa
-                        </span>
-                        <span
-                            className="section-label mt-[3px]"
-                            style={{ color: 'var(--color-primary)', fontSize: '0.58rem' }}
-                        >
-                            Photo Suite
-                        </span>
-                    </div>
+                        Photo Suite
+                    </span>
                 </button>
 
                 {/* Language switcher */}
