@@ -246,10 +246,10 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
         <div className="space-y-6 pb-20">
             {!originalImage ? (
                  <div className="relative">
-                     <h2 className="text-3xl font-bold text-gray-900 mb-6 px-2">{langPack.brandToolTitle}</h2>
+                     <h2 className="font-display mb-6 px-2" style={{ fontSize: 'var(--text-h1)', color: 'var(--color-ink)' }}>{langPack.brandToolTitle}</h2>
                      <label className="flex flex-col items-center justify-center w-full aspect-[4/3] rounded-[2rem] border-2 border-dashed border-gray-300 bg-white hover:bg-gray-50 transition-colors cursor-pointer group ios-btn-press">
                         <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                             <Icon name="upload" className="w-8 h-8 text-gray-400 group-hover:text-amber-500 transition-colors" />
+                             <Icon name="upload" className="w-8 h-8 text-gray-400 group-hover:text-[var(--color-accent)] transition-colors" />
                         </div>
                         <p className="mt-4 text-gray-500 font-medium group-hover:text-gray-700">Tap to upload photo</p>
                         <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
@@ -261,7 +261,7 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
                         {isLoading ? (
                             <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm z-20">
                                 <Loader />
-                                <p className="mt-4 text-sm font-semibold text-amber-700 animate-pulse px-6 text-center">{loadingStage}</p>
+                                <p className="mt-4 text-sm font-semibold text-[var(--color-accent)] animate-pulse px-6 text-center">{loadingStage}</p>
                             </div>
                         ) : null}
                         
@@ -274,7 +274,7 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
                         {selectedBrandedImage && !isLoading && (
                             <button 
                                 onClick={() => downloadCleanedImage(selectedBrandedImage)}
-                                className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg text-amber-700 ios-btn-press z-20 group"
+                                className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-lg text-[var(--color-accent)] ios-btn-press z-20 group"
                                 title="Download Hardware Signed Image"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
@@ -289,7 +289,7 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
                     {brandedImages && !isLoading && (
                         <div className="flex gap-2 mt-4 overflow-x-auto no-scrollbar py-2">
                              {brandedImages.map((image, index) => (
-                                <button key={index} onClick={() => setSelectedBrandedImage(image)} className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${selectedBrandedImage === image ? 'border-amber-500 scale-105 shadow-md' : 'border-transparent opacity-70'}`}>
+                                <button key={index} onClick={() => setSelectedBrandedImage(image)} className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${selectedBrandedImage === image ? 'border-[var(--color-accent)] scale-105 shadow-md' : 'border-transparent opacity-70'}`}>
                                     <img src={image} alt={`Var ${index}`} className="w-full h-full object-cover"/>
                                 </button>
                             ))}
@@ -313,7 +313,7 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
                                     <button
                                         key={cat.id}
                                         onClick={() => setActiveCategory(cat.id)}
-                                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ios-btn-press ${activeCategory === cat.id ? 'bg-amber-500 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                        className={`px-4 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap ios-btn-press ${activeCategory === cat.id ? 'bg-[var(--color-accent)] text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
                                     >
                                         {langPack[cat.labelKey] as string}
                                     </button>
@@ -340,7 +340,7 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
                                         opacity: 0
                                     }}
                                     className={`flex flex-col items-center justify-center p-4 bg-white border rounded-xl shadow-sm hover:shadow-md transition-all active:scale-95 disabled:opacity-50
-                                    ${activeTemplateId === template.id ? 'border-amber-500 ring-2 ring-amber-100' : 'border-gray-100'}`}
+                                    ${activeTemplateId === template.id ? 'border-[var(--color-accent)] ring-2 ring-[var(--color-accent-tint)]' : 'border-gray-100'}`}
                                 >
                                     <span className="text-sm font-semibold text-gray-800 text-center">{langPack[template.titleKey] as string}</span>
                                 </button>

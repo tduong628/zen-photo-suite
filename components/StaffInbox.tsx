@@ -66,7 +66,7 @@ const StaffInbox: React.FC<StaffInboxProps> = ({ showNotification, onBrandImage 
         <div className="stagger-up">
             <p className="section-label mb-1">FROM YOUR TEAM</p>
             <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display" style={{ fontSize: 'clamp(1.6rem, 5vw, 2rem)', color: 'var(--color-text)' }}>
+                <h2 className="font-display" style={{ fontSize: 'var(--text-h1)', color: 'var(--color-ink)' }}>
                     Staff Inbox
                     {pendingCount > 0 && (
                         <span className="ml-2 align-middle text-xs font-sans font-bold text-white px-2 py-1 rounded-full"
@@ -88,7 +88,7 @@ const StaffInbox: React.FC<StaffInboxProps> = ({ showNotification, onBrandImage 
                     showNotification('Staff upload link copied — text it to your team!', 'success');
                 }}
                 className="ios-btn-press w-full mb-5 p-3 text-sm font-medium text-left flex items-center justify-between"
-                style={{ borderRadius: '1rem', background: '#fdf2f8', border: '1px dashed var(--color-primary-lt)', color: 'var(--color-primary)' }}>
+                style={{ borderRadius: '1rem', background: 'var(--color-accent-tint)', border: '1px dashed var(--color-border-strong)', color: 'var(--color-accent-dark)' }}>
                 <span>📲 Copy the upload link to share with staff</span>
                 <span>→</span>
             </button>
@@ -126,7 +126,7 @@ const StaffInbox: React.FC<StaffInboxProps> = ({ showNotification, onBrandImage 
                         <div key={u.fileId} className="luxury-card flex gap-3 p-3 items-center">
                             <img src={u.thumbnailUrl} alt={u.serviceType} loading="lazy"
                                 className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
-                                style={{ background: '#f3e8ef' }} />
+                                style={{ background: 'var(--color-surface-sunken)' }} />
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm font-bold" style={{ color: 'var(--color-text)' }}>
@@ -134,8 +134,8 @@ const StaffInbox: React.FC<StaffInboxProps> = ({ showNotification, onBrandImage 
                                     </span>
                                     <span className="text-[0.65rem] font-semibold uppercase px-1.5 py-0.5 rounded"
                                         style={{
-                                            background: u.status === 'PENDING' ? '#fef3c7' : u.status === 'PROCESSED' ? '#dcfce7' : '#f1f5f9',
-                                            color: u.status === 'PENDING' ? '#92400e' : u.status === 'PROCESSED' ? '#166534' : '#64748b',
+                                            background: u.status === 'PENDING' ? '#FBEBD2' : u.status === 'PROCESSED' ? 'var(--color-success-tint)' : 'var(--color-surface-sunken)',
+                                            color: u.status === 'PENDING' ? 'var(--color-accent-dark)' : u.status === 'PROCESSED' ? 'var(--color-success)' : 'var(--color-ink-soft)',
                                         }}>
                                         {u.status === 'PENDING' ? 'New' : u.status === 'PROCESSED' ? 'Done' : 'Skipped'}
                                     </span>

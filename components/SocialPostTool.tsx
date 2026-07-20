@@ -114,8 +114,8 @@ const SocialPostTool: React.FC<SocialPostToolProps> = ({ langPack, showNotificat
     return (
         <div className="space-y-6 pb-20">
              <div className="text-left px-2 mb-4">
-                <h2 className="text-3xl font-bold text-gray-900">{langPack.socialToolTitle}</h2>
-                <p className="text-gray-500 mt-1">{langPack.socialToolDesc}</p>
+                <h2 className="font-display" style={{ fontSize: 'var(--text-h1)', color: 'var(--color-ink)' }}>{langPack.socialToolTitle}</h2>
+                <p style={{ color: 'var(--color-ink-soft)', marginTop: '0.25rem' }}>{langPack.socialToolDesc}</p>
             </div>
 
             {/* STEP 1: Upload & Visualize */}
@@ -170,9 +170,9 @@ const SocialPostTool: React.FC<SocialPostToolProps> = ({ langPack, showNotificat
                             <p className="text-xs font-bold text-indigo-400 uppercase tracking-wide">Detected Service</p>
                             <p className="text-lg font-bold text-indigo-900 leading-tight mt-1">{analysis.serviceType}</p>
                         </div>
-                        <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100">
-                            <p className="text-xs font-bold text-amber-500 uppercase tracking-wide">Mood</p>
-                            <p className="text-lg font-bold text-amber-900 leading-tight mt-1">{analysis.mood}</p>
+                        <div className="p-4 rounded-2xl border" style={{ background: 'var(--color-accent-tint)', borderColor: 'var(--color-border)' }}>
+                            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>Mood</p>
+                            <p className="text-lg font-bold leading-tight mt-1" style={{ color: 'var(--color-accent-dark)' }}>{analysis.mood}</p>
                         </div>
                     </div>
 
@@ -218,7 +218,8 @@ const SocialPostTool: React.FC<SocialPostToolProps> = ({ langPack, showNotificat
                          <button 
                             onClick={handleGenerate} 
                             disabled={isGenerating} 
-                            className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-lg shadow-indigo-200 ios-btn-press disabled:opacity-70 flex justify-center items-center gap-2"
+                            className="w-full py-4 rounded-xl text-white font-bold text-lg shadow-lg ios-btn-press disabled:opacity-70 flex justify-center items-center gap-2"
+                            style={{ background: 'var(--color-accent)' }}
                         >
                             {isGenerating ? (
                                 <>
@@ -240,11 +241,11 @@ const SocialPostTool: React.FC<SocialPostToolProps> = ({ langPack, showNotificat
                 <div className="animate-fade-in space-y-6">
                     
                     {/* Feature 5: Engagement Score */}
-                    <div className="bg-gradient-to-r from-emerald-500 to-amber-500 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
+                    <div className="rounded-3xl p-6 text-white shadow-lg relative overflow-hidden" style={{ background: 'linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%)' }}>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
                         <div className="flex justify-between items-end relative z-10">
                             <div>
-                                <p className="text-amber-100 font-medium text-sm mb-1">{langPack.socialSectionScore}</p>
+                                <p className="text-white/80 font-medium text-sm mb-1">{langPack.socialSectionScore}</p>
                                 <div className="text-5xl font-extrabold tracking-tight">{content.viralityScore}<span className="text-2xl opacity-60">/100</span></div>
                             </div>
                             <div className="bg-white/20 backdrop-blur-md rounded-xl p-3 max-w-[60%]">

@@ -3,7 +3,10 @@ import React from 'react';
 
 const Loader: React.FC = () => {
   return (
-    <div className="border-4 border-gray-200 border-t-amber-700 rounded-full w-10 h-10 animate-spin"></div>
+    <div
+      className="rounded-full w-10 h-10 animate-spin"
+      style={{ border: '4px solid var(--color-surface-sunken)', borderTopColor: 'var(--color-accent)' }}
+    ></div>
   );
 };
 

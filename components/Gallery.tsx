@@ -8,11 +8,12 @@ import Icon from './icons';
 interface GalleryProps {
     langPack: LanguagePack;
     showNotification: (message: string, type?: 'error' | 'success') => void;
+    onCreatePhoto?: () => void;
 }
 
 const TOOL_FILTERS = ['All', 'Photo Branding', 'Promotion Graphic', 'Brochure Background'];
 
-const Gallery: React.FC<GalleryProps> = ({ showNotification }) => {
+const Gallery: React.FC<GalleryProps> = ({ showNotification, onCreatePhoto }) => {
     const [items, setItems] = useState<GalleryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filter, setFilter] = useState('All');
@@ -54,7 +55,7 @@ const Gallery: React.FC<GalleryProps> = ({ showNotification }) => {
     return (
         <div className="stagger-up">
             <p className="section-label mb-1">SAVED CREATIONS</p>
-            <h2 className="font-display mb-4" style={{ fontSize: 'clamp(1.6rem, 5vw, 2rem)', color: 'var(--color-text)' }}>
+            <h2 className="font-display mb-4" style={{ fontSize: 'var(--text-h1)', color: 'var(--color-ink)' }}>
                 Your Gallery
             </h2>
 
@@ -81,10 +82,19 @@ const Gallery: React.FC<GalleryProps> = ({ showNotification }) => {
             {isLoading ? (
                 <div className="py-16 flex justify-center"><Loader /></div>
             ) : filtered.length === 0 ? (
-                <div className="luxury-card p-8 text-center">
-                    <p style={{ color: 'var(--color-text-muted)' }}>
-                        No saved images yet. Generate something and it will appear here automatically.
+                <div className="luxury-card p-8 text-center flex flex-col items-center gap-3">
+                    <span style={{ color: 'var(--color-accent)', opacity: 0.55 }}>
+                        <Icon name="gallery" className="w-14 h-14" />
+                    </span>
+                    <h3 style={{ fontSize: 'var(--text-h3)', fontWeight: 600, color: 'var(--color-ink)' }}>No photos yet</h3>
+                    <p style={{ color: 'var(--color-ink-soft)', fontSize: 'var(--text-body-sm)', maxWidth: '22rem' }}>
+                        Generate something and it will appear here automatically.
                     </p>
+                    {onCreatePhoto && (
+                        <button onClick={onCreatePhoto} className="btn-primary ios-btn-press mt-1">
+                            Create your first photo
+                        </button>
+                    )}
                 </div>
             ) : (
                 <div className="grid grid-cols-2 gap-3">
@@ -100,7 +110,7 @@ const Gallery: React.FC<GalleryProps> = ({ showNotification }) => {
                                 alt={item.style || item.tool}
                                 loading="lazy"
                                 className="w-full aspect-square object-cover"
-                                style={{ background: '#f3e8ef' }}
+                                style={{ background: 'var(--color-surface-sunken)' }}
                             />
                             <div className="p-2.5">
                                 <p className="text-[0.65rem] font-semibold uppercase tracking-wide" style={{ color: 'var(--color-primary)' }}>
@@ -119,7 +129,7 @@ const Gallery: React.FC<GalleryProps> = ({ showNotification }) => {
             {selected && (
                 <div
                     className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4"
-                    style={{ background: 'rgba(40,16,30,0.45)', backdropFilter: 'blur(6px)' }}
+                    style={{ background: 'var(--color-scrim)', backdropFilter: 'blur(6px)' }}
                     onClick={() => setSelected(null)}
                 >
                     <div
@@ -136,13 +146,12 @@ const Gallery: React.FC<GalleryProps> = ({ showNotification }) => {
                                 {new Date(selected.timestamp).toLocaleString()}
                             </p>
                             <div className="flex gap-2">
-                                <button onClick={() => handleDownload(selected)} className="btn-primary ios-btn-press flex-1 py-2.5 text-sm">
+                                <button onClick={() => handleDownload(selected)} className="btn-primary ios-btn-press flex-1">
                                     Download
                                 </button>
                                 <button
                                     onClick={() => handleDelete(selected)}
-                                    className="ios-btn-press px-4 py-2.5 text-sm font-medium"
-                                    style={{ borderRadius: '1rem', border: '1px solid var(--color-border)', color: '#be123c', background: '#fff' }}
+                                    className="btn-destructive ios-btn-press"
                                 >
                                     Delete
                                 </button>

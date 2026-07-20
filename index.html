@@ -4,33 +4,97 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#F4EEE4" />
     <title>Zen Nail Spa</title>
+
+    <!-- Favicon / app-icon set (§4b) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png" />
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Fonts: Fraunces (headline, variable, high optical size) + Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/piexifjs/1.0.6/piexif.min.js"></script>
     <style>
-      /* ── Design Tokens ─────────────────────────────────────────────── */
+      /* ── Design Tokens — Cream & Copper (locked spec, both apps share this base) ── */
       :root {
-        --color-primary:     #8A762B; /* logo gold */
-        --color-primary-lt:  #E9DFA2; /* light gold */
-        --color-accent:      #6B5436; /* deep brown accent */
-        --color-bg:          #FBF9F1; /* warm ivory */
-        --color-surface:     #FFFFFF;
-        --color-surface-2:   #F7F2E0; /* soft gold surface */
-        --color-border:      #E6DEBE;
-        --color-text:        #1C170A; /* near-black with warmth */
-        --color-text-muted:  #76704F;
-        --color-text-subtle: #C4BC92;
-        --font-display:      'Playfair Display', Georgia, serif;
-        --font-body:         'Inter', -apple-system, sans-serif;
-        --radius-card:       1.75rem;
-        --radius-pill:       9999px;
-        --shadow-card:       0 8px 32px -4px rgba(190,24,93,0.10), 0 2px 8px -2px rgba(0,0,0,0.06);
-        --shadow-card-hover: 0 20px 48px -8px rgba(190,24,93,0.16), 0 4px 12px -2px rgba(0,0,0,0.08);
-        --shadow-nav:        0 8px 32px rgba(190,24,93,0.15), 0 2px 8px rgba(0,0,0,0.08);
-        --dur-fast:          150ms;
-        --dur-normal:        280ms;
-        --ease-spring:       cubic-bezier(0.16, 1, 0.3, 1);
+        /* Shared base palette (spec §1a) */
+        --color-bg:            #F4EEE4;
+        --color-surface:       #FBF7F0;
+        --color-surface-2:     #FFFFFF;
+        --color-surface-sunken:#EDE5D7;
+        --color-ink:           #211C17;
+        --color-ink-soft:      #4A423A;
+        --color-muted:         #8A7E6E; /* >=18px or bold text ONLY — never small body/captions */
+        --color-accent:        #A85A34;
+        --color-accent-dark:   #7C4A2D;
+        --color-accent-tint:   #F0DFD3;
+        --color-border:        rgba(124,74,45,.18);
+        --color-border-strong: rgba(124,74,45,.34);
+        --color-success:       #3E7D6B;
+        --color-success-tint:  #E2EDE8;
+        --color-error:         #B23A2E;
+        --color-error-tint:    #F6E2DF;
+        --color-focus-ring:    #A85A34;
+        --color-scrim:         rgba(33,28,23,.44);
+
+        /* Zen-only jade micro-accent (spec §1c) — used on at most 2 surfaces:
+           the hero bento tile keyline + the header logo tint. Copper stays
+           the primary action color everywhere. */
+        --color-accent-2:      #3E7D6B;
+        --color-accent-2-tint: #E2EDE8;
+
+        /* Legacy variable names kept for backward compatibility with existing
+           tool components (BrandingTool, SocialPostTool, Gallery, StaffInbox) —
+           remapped to the cream/copper values above so the whole app inherits
+           the new palette without a full internal rewrite of those files.
+           text-muted/text-subtle intentionally alias ink-soft (never the low-
+           contrast --color-muted) because both are used at <18px throughout. */
+        --color-primary:      var(--color-accent);
+        --color-primary-lt:   var(--color-accent-tint);
+        --color-accent-legacy:var(--color-accent-dark);
+        --color-text:         var(--color-ink);
+        --color-text-muted:   var(--color-ink-soft);
+        --color-text-subtle:  var(--color-ink-soft);
+
+        --font-display: 'Fraunces', Georgia, serif;
+        --font-body:    'Inter', -apple-system, sans-serif;
+
+        --radius-card: 1.125rem; /* 18px, spec §3e tiles */
+        --radius-pill: 9999px;
+        --shadow-card:       0 2px 8px rgba(33,28,23,.06);
+        --shadow-card-hover: 0 8px 24px rgba(33,28,23,.10);
+        --shadow-toast:      0 8px 24px rgba(33,28,23,.14);
+
+        /* Typography scale (spec §2b) */
+        --text-display: clamp(2.4rem, 1.6rem + 3.6vw, 3.6rem);
+        --text-h1:       clamp(1.8rem, 1.4rem + 1.8vw, 2.4rem);
+        --text-h2:       clamp(1.3rem, 1.1rem + 0.8vw, 1.6rem);
+        --text-h3:       1.125rem;
+        --text-body:     1rem;
+        --text-body-sm:  0.9375rem;
+        --text-caption:  0.8125rem;
+        --text-label:    0.75rem;
+        --text-button:   0.9375rem;
+
+        /* Motion — Zen "Snappy Precision" (spec §5a) */
+        --ease-standard: cubic-bezier(0.2, 0.9, 0.25, 1);
+        --ease-spring:   var(--ease-standard); /* legacy alias */
+        --dur-page:  300ms;
+        --dur-card:  220ms;
+        --dur-press: 120ms;
+        --stagger:   45ms;
+        --dur-fast:   150ms; /* legacy alias, small UI transitions */
+        --dur-normal: 220ms; /* legacy alias */
+        --hover-lift:  -4px;
+        --press-scale: 0.97;
       }
 
       /* ── Base ──────────────────────────────────────────────────────── */
@@ -39,7 +103,7 @@
       body {
         font-family: var(--font-body);
         background-color: var(--color-bg);
-        color: var(--color-text);
+        color: var(--color-ink);
         -webkit-tap-highlight-color: transparent;
         -webkit-font-smoothing: antialiased;
       }
@@ -48,12 +112,12 @@
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-      /* ── Glass ─────────────────────────────────────────────────────── */
+      /* ── Header glass (flat cream backing, never over another glass layer) ── */
       .glass-panel {
-        background: rgba(255,255,255,0.82);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255,255,255,0.6);
+        background: rgba(251,247,240,0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--color-border);
       }
 
       /* ── Inputs ────────────────────────────────────────────────────── */
@@ -61,76 +125,137 @@
         background-color: var(--color-surface-2);
         border: 1.5px solid var(--color-border);
         transition: all var(--dur-fast) ease;
-        color: var(--color-text);
+        color: var(--color-ink);
         font-family: var(--font-body);
       }
       .ios-input:focus {
-        background-color: var(--color-surface);
-        border-color: var(--color-primary-lt);
+        background-color: var(--color-surface-2);
+        border-color: var(--color-accent);
         outline: none;
-        box-shadow: 0 0 0 3px rgba(190,24,93,0.12);
+        box-shadow: 0 0 0 3px rgba(168,90,52,0.14);
       }
 
       /* ── Press feedback ────────────────────────────────────────────── */
       .ios-btn-press:active {
-        transform: scale(0.97);
-        opacity: 0.85;
-        transition: transform 80ms ease, opacity 80ms ease;
+        transform: scale(var(--press-scale));
+        opacity: 0.9;
+        transition: transform var(--dur-press) ease, opacity var(--dur-press) ease;
+      }
+
+      /* ── Focus ring (spec §1a — visible on cream) ─────────────────── */
+      .ios-btn-press:focus-visible,
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      main:focus-visible {
+        outline: 2px solid var(--color-focus-ring);
+        outline-offset: 2px;
+        border-radius: 6px;
       }
 
       /* ── Display type ──────────────────────────────────────────────── */
-      .font-display { font-family: var(--font-display); }
+      .font-display {
+        font-family: var(--font-display);
+        font-optical-sizing: auto;
+      }
 
-      /* ── Luxury card ───────────────────────────────────────────────── */
+      /* ── Card (spec §3e) ───────────────────────────────────────────── */
       .luxury-card {
         background: var(--color-surface);
         border-radius: var(--radius-card);
         box-shadow: var(--shadow-card);
         border: 1px solid var(--color-border);
-        transition: box-shadow var(--dur-normal) var(--ease-spring),
-                    transform var(--dur-normal) var(--ease-spring);
+        transition: box-shadow var(--dur-card) var(--ease-standard),
+                    transform var(--dur-card) var(--ease-standard),
+                    border-color var(--dur-card) var(--ease-standard);
       }
       .luxury-card:hover {
         box-shadow: var(--shadow-card-hover);
-        transform: translateY(-2px);
+        transform: translateY(var(--hover-lift));
+        border-color: var(--color-border-strong);
       }
 
-      /* ── Primary button ────────────────────────────────────────────── */
+      /* ── Buttons (spec §3d) ───────────────────────────────────────── */
       .btn-primary {
-        background: var(--color-primary);
+        background: var(--color-accent);
         color: #fff;
         font-family: var(--font-body);
         font-weight: 600;
+        font-size: var(--text-button);
         letter-spacing: 0.01em;
-        transition: all var(--dur-fast) ease;
+        border-radius: 12px;
+        min-height: 44px;
+        padding: 12px 20px;
+        transition: background var(--dur-fast) ease, transform var(--dur-press) ease;
         cursor: pointer;
       }
-      .btn-primary:hover  { background: #6E5E20; }
-      .btn-primary:active { transform: scale(0.97); }
+      .btn-primary:hover  { background: var(--color-accent-dark); }
+      .btn-primary:active { transform: scale(var(--press-scale)); }
+
+      .btn-secondary {
+        background: var(--color-surface-2);
+        color: var(--color-ink);
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: var(--text-button);
+        border-radius: 12px;
+        min-height: 44px;
+        padding: 12px 20px;
+        border: 1px solid var(--color-border-strong);
+        transition: background var(--dur-fast) ease, transform var(--dur-press) ease;
+        cursor: pointer;
+      }
+      .btn-secondary:hover { background: var(--color-surface-sunken); }
+      .btn-secondary:active { transform: scale(var(--press-scale)); }
+
+      .btn-ghost {
+        background: transparent;
+        color: var(--color-accent);
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: var(--text-button);
+        border-radius: 12px;
+        min-height: 44px;
+        padding: 12px 20px;
+        cursor: pointer;
+      }
+      .btn-ghost:active { transform: scale(var(--press-scale)); }
+
+      .btn-destructive {
+        background: transparent;
+        color: var(--color-error);
+        font-family: var(--font-body);
+        font-weight: 600;
+        font-size: var(--text-button);
+        border-radius: 12px;
+        min-height: 44px;
+        padding: 12px 20px;
+        border: 1px solid rgba(178,58,46,.3);
+        cursor: pointer;
+      }
+      .btn-destructive:active { transform: scale(var(--press-scale)); }
 
       /* ── Section label ─────────────────────────────────────────────── */
       .section-label {
         font-family: var(--font-body);
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
+        font-size: var(--text-label);
+        font-weight: 600;
+        letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: var(--color-primary);
-      }
-
-      /* ── Ambient bg orbs ───────────────────────────────────────────── */
-      .orb {
-        position: fixed;
-        border-radius: 9999px;
-        pointer-events: none;
-        z-index: 0;
-        filter: blur(80px);
+        /* --color-accent measures ~4.36:1 on cream at this size/weight — just
+           under the 4.5:1 AA floor for non-large text. --color-accent-dark
+           clears AAA (6.3:1) and is used here app-wide for that reason. */
+        color: var(--color-accent-dark);
       }
 
       /* ── Animations ────────────────────────────────────────────────── */
       @keyframes page-enter {
-        0%   { opacity: 0; transform: scale(0.96) translateY(24px); filter: blur(8px); }
-        100% { opacity: 1; transform: scale(1)    translateY(0);    filter: blur(0);  }
+        0%   { opacity: 0; transform: translateY(12px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes page-exit {
+        0%   { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-8px); }
       }
       @keyframes stagger-up {
         0%   { opacity: 0; transform: translateY(16px); }
@@ -140,9 +265,18 @@
         0%   { opacity: 0; }
         100% { opacity: 1; }
       }
-      @keyframes shimmer {
-        0%   { background-position: -200% center; }
-        100% { background-position:  200% center; }
+      @keyframes toast-in {
+        0%   { opacity: 0; transform: translateY(12px); }
+        100% { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes splash-mark {
+        0%   { opacity: 0; transform: scale(0.94); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      @keyframes splash-glow {
+        0%   { opacity: 0; }
+        45%  { opacity: 0.3; }
+        100% { opacity: 0.3; }
       }
       /* Used via inline styles in BrandingTool template grid — buttons start
          at opacity:0 and rely on this keyframe to become visible. */
@@ -152,19 +286,19 @@
       }
 
       .animate-ios-home {
-        animation: page-enter 0.65s var(--ease-spring) forwards;
+        animation: page-enter var(--dur-page) var(--ease-standard) forwards;
       }
       .animate-stagger-1 {
         opacity: 0;
-        animation: stagger-up 0.55s var(--ease-spring) forwards 0.05s;
+        animation: stagger-up 0.45s var(--ease-standard) forwards calc(var(--stagger) * 1);
       }
       .animate-stagger-2 {
         opacity: 0;
-        animation: stagger-up 0.55s var(--ease-spring) forwards 0.15s;
+        animation: stagger-up 0.45s var(--ease-standard) forwards calc(var(--stagger) * 2.5);
       }
       .animate-stagger-3 {
         opacity: 0;
-        animation: stagger-up 0.55s var(--ease-spring) forwards 0.25s;
+        animation: stagger-up 0.45s var(--ease-standard) forwards calc(var(--stagger) * 4);
       }
       .animate-fade-in {
         animation: fade-in 0.2s ease forwards;
@@ -173,8 +307,9 @@
       @media (prefers-reduced-motion: reduce) {
         .animate-ios-home, .animate-stagger-1, .animate-stagger-2,
         .animate-stagger-3, .animate-fade-in {
-          animation: none !important;
+          animation: fade-in 120ms ease forwards !important;
           opacity: 1 !important;
+          transform: none !important;
         }
       }
     </style>
@@ -190,7 +325,7 @@
 </script>
 <link rel="stylesheet" href="/index.css">
 </head>
-  <body class="antialiased selection:bg-amber-200 selection:text-amber-900">
+  <body class="antialiased selection:bg-[#F0DFD3] selection:text-[#7C4A2D]">
     <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>

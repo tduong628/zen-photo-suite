@@ -4,8 +4,7 @@ export enum View {
     Branding = 'Branding',
     Social = 'Social',
     Gallery = 'Gallery',
-    Inbox = 'Inbox',
-    Details = 'Details'
+    Inbox = 'Inbox'
 }
 
 export type NotificationType = 'error' | 'success';
