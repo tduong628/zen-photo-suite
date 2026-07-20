@@ -583,27 +583,28 @@ export const holidayStyles: Record<string, StyleDefinition> = {
 /**
  * MODEL & EDITORIAL - STYLE CONFIGURATION
  * ------------------------------------------------
- * High-Fashion, Human-Centric themes.
- * CRITICAL STRATEGY: We do NOT generate full-body shots. 
- * We generate "Beauty Macros" where the hand interacts with the model's environment (face, accessories, clothing).
+ * High-Fashion, Object-Centric themes.
+ * CRITICAL STRATEGY: We NEVER generate a human face, chin, neck, shoulder, or hair.
+ * The uploaded hand is the ONLY human element in frame — every scene pairs it with
+ * inanimate props, fabric laid flat or draped over furniture, and backdrops only.
  */
 export const modelStyles: Record<string, StyleDefinition> = {
   model_luxury: {
     id: 'model_luxury',
     name: 'Luxury Living',
-    cameraLens: "Shot on 85mm Prime f/1.4. Beauty Editorial style. Shallow depth of field. Sharp focus on nails, soft focus on the model's skin/clothing.",
-    lightingSetup: "Cinematic Penthouse Lighting. Mixed color temperatures (Cool city lights in background, Warm flattering key light on skin).",
+    cameraLens: "Shot on 85mm Prime f/1.4. Beauty Editorial style. Shallow depth of field. Sharp focus on nails, soft focus on the background props.",
+    lightingSetup: "Cinematic Penthouse Lighting. Mixed color temperatures (Cool city lights in background, Warm flattering key light on the hand).",
     colorGrade: "Rich, Expensive, 'Old Money' aesthetic. Deep blacks, champagne highlights, low saturation.",
     scenes: [
       {
         label: "The Clutch",
         environmentTexture: "Texture of a quilted luxury leather bag (black or beige). Gold hardware details.",
-        compositionRule: "Fashion Accessory. Hand clutching the bag. No face visible."
+        compositionRule: "Fashion Accessory. Hand clutching the bag. No face or body visible."
       },
       {
         label: "Jewelry Adjustment",
-        environmentTexture: "Soft skin texture (neck/shoulder area) and a glimpse of a diamond necklace or pearl strand.",
-        compositionRule: "Beauty Portrait Crop. Hand adjusting a necklace. Model's chin/lips blurred in background."
+        environmentTexture: "A diamond necklace or pearl strand draped over a velvet jewelry stand.",
+        compositionRule: "Beauty Product Shot. Hand adjusting the necklace on the stand. No face or body visible."
       },
       {
         label: "Evening Toast",
@@ -612,8 +613,8 @@ export const modelStyles: Record<string, StyleDefinition> = {
       },
       {
         label: "Silk Robe",
-        environmentTexture: "High-sheen silk or satin fabric (champagne or emerald).",
-        compositionRule: "Getting Ready. Hand resting on the lapel of a silk robe."
+        environmentTexture: "High-sheen silk or satin fabric (champagne or emerald), laid out with soft folds.",
+        compositionRule: "Getting Ready flat lay. Hand resting on the folded silk fabric. No face or body visible."
       },
       {
         label: "The Balcony",
@@ -632,13 +633,13 @@ export const modelStyles: Record<string, StyleDefinition> = {
     scenes: [
       {
         label: "Sunglasses",
-        environmentTexture: "Reflective dark sunglasses lens. City street reflection visible in the lens.",
-        compositionRule: "Cool Factor. Hand adjusting sunglasses. Face blurred."
+        environmentTexture: "Reflective dark sunglasses resting on a ledge or held up to the light. City street reflection visible in the lens.",
+        compositionRule: "Cool Factor. Hand holding the sunglasses up to the light. No face visible."
       },
       {
         label: "Leather Jacket",
-        environmentTexture: "Black leather biker jacket texture with silver zippers.",
-        compositionRule: "Edgy fashion. Hand resting on the leather lapel."
+        environmentTexture: "Black leather biker jacket with silver zippers, draped over a chair.",
+        compositionRule: "Edgy fashion. Hand resting on the draped leather lapel. No body visible."
       },
       {
         label: "Coffee Run",
@@ -647,8 +648,8 @@ export const modelStyles: Record<string, StyleDefinition> = {
       },
       {
         label: "Denim & Diamonds",
-        environmentTexture: "High-quality blue denim fabric texture.",
-        compositionRule: "Casual Luxury. Hand in a jean pocket or resting on denim leg."
+        environmentTexture: "High-quality blue denim fabric, folded on a surface.",
+        compositionRule: "Casual Luxury. Hand resting on the folded denim fabric."
       }
     ]
   },
@@ -666,8 +667,8 @@ export const modelStyles: Record<string, StyleDefinition> = {
       {
         label: "Winter Wool",
         seasons: [11, 0, 1],
-        environmentTexture: "Texture of a high-end grey wool coat or cashmere scarf. Background is out-of-focus snowy city window.",
-        compositionRule: "Winter Commute. Hand resting on the wool lapel or holding leather gloves."
+        environmentTexture: "Texture of a high-end grey wool coat, draped over a chair, or a cashmere scarf laid flat. Background is out-of-focus snowy city window.",
+        compositionRule: "Winter Commute. Hand resting on the draped coat or holding leather gloves. No body visible."
       },
       {
         label: "The Agenda",
@@ -680,8 +681,8 @@ export const modelStyles: Record<string, StyleDefinition> = {
       {
         label: "Spring Pastel",
         seasons: [2, 3, 4],
-        environmentTexture: "Soft pastel blazer (blush pink or mint). Background is bright and airy window light.",
-        compositionRule: "Fresh start. Hand resting on the blazer sleeve or white desk."
+        environmentTexture: "Soft pastel blazer (blush pink or mint), draped over a chair. Background is bright and airy window light.",
+        compositionRule: "Fresh start. Hand resting on the draped blazer or a white desk. No body visible."
       },
       {
         label: "Outdoor Cafe",
@@ -694,8 +695,8 @@ export const modelStyles: Record<string, StyleDefinition> = {
       {
         label: "Linen Suit",
         seasons: [5, 6, 7],
-        environmentTexture: "Texture of a crisp white or beige linen suit. Bright, harsh sunlight (fashion style).",
-        compositionRule: "Summer Business. Hand resting on the fabric. High contrast shadows."
+        environmentTexture: "Texture of a crisp white or beige linen jacket, draped over a chair. Bright, harsh sunlight (fashion style).",
+        compositionRule: "Summer Business. Hand resting on the draped fabric. High contrast shadows. No body visible."
       },
       {
         label: "Iced Coffee",
@@ -708,8 +709,8 @@ export const modelStyles: Record<string, StyleDefinition> = {
       {
         label: "The Trench",
         seasons: [8, 9, 10],
-        environmentTexture: "Classic beige trench coat fabric (Burberry style).",
-        compositionRule: "Autumn Fashion. Hand adjusting the belt or resting on the fabric."
+        environmentTexture: "Classic beige trench coat (Burberry style), draped over a coat rack.",
+        compositionRule: "Autumn Fashion. Hand resting on the coat's belt or fabric. No body visible."
       },
       {
         label: "Tortoise Shell",
@@ -724,37 +725,39 @@ export const modelStyles: Record<string, StyleDefinition> = {
 /**
  * PORTRAIT & BEAUTY - STYLE CONFIGURATION
  * ------------------------------------------------
- * "Face-Framing" styles.
- * CRITICAL: These scenes MUST include context of a human face/body (blurred) 
- * to differentiate them from standard table shots.
+ * "Vanity Editorial" styles — mirrors, jewelry stands, cosmetics, fabric, and light.
+ * CRITICAL: NEVER generate a face, chin, cheek, neck, shoulder, or hair attached to
+ * a person. The uploaded hand is the only human element in frame; everything else
+ * is an inanimate prop, mirror, or surface that implies the beauty-editorial mood
+ * without fabricating a person who doesn't exist.
  */
 export const portraitStyles: Record<string, StyleDefinition> = {
   portrait_glam: {
     id: 'portrait_glam',
     name: 'Glamour Editorial',
-    cameraLens: "Shot on 85mm Portrait Lens f/1.8. Classic Beauty Photography. Sharp focus on nails, soft-focus background of the model's features.",
-    lightingSetup: "Butterfly Lighting (Paramount). Flattering, high-fashion studio lighting. Highlights on cheekbones and nails.",
-    colorGrade: "High-Gloss Magazine Retouch. Saturated, polished, expensive skin texture. Rich blacks.",
+    cameraLens: "Shot on 85mm Portrait Lens f/1.8. Classic Beauty Photography. Sharp focus on nails, soft-focus background props.",
+    lightingSetup: "Butterfly Lighting (Paramount). Flattering, high-fashion studio lighting. Highlights on the nails and surrounding props.",
+    colorGrade: "High-Gloss Magazine Retouch. Saturated, polished, expensive textures. Rich blacks.",
     scenes: [
       {
         label: "Red Lip Interaction",
-        environmentTexture: "Blurred view of red lipstick/lips in the background. (Model's face).",
-        compositionRule: "Classic Beauty. Hand resting near the chin or lips (not covering). Nails frame the mouth area."
+        environmentTexture: "An open red lipstick tube and gold compact mirror on a vanity.",
+        compositionRule: "Classic Beauty. Hand posed beside the lipstick and mirror. No face or body visible."
       },
       {
         label: "The Earring",
-        environmentTexture: "Sparkle of a diamond earring and side of the neck/jawline.",
-        compositionRule: "Jewelry focus. Hand tucking hair behind the ear."
+        environmentTexture: "A diamond earring resting on a velvet jewelry tray.",
+        compositionRule: "Jewelry focus. Hand placing the earring on the tray. No face or body visible."
       },
       {
         label: "Hollywood Waves",
-        environmentTexture: "Cascading vintage hollywood waves (hair texture) in brunette or blonde.",
-        compositionRule: "Hair interaction. Hand resting gently on the hair waves."
+        environmentTexture: "A vintage hairbrush beside loose waves of hair resting on a vanity table (a prop, not attached to a person).",
+        compositionRule: "Vanity styling. Hand resting near the hairbrush. No face or body visible."
       },
       {
         label: "Necklace Touch",
-        environmentTexture: "Collarbone and a diamond necklace.",
-        compositionRule: "Elegant. Hand touching the necklace pendant."
+        environmentTexture: "A diamond necklace draped over a velvet jewelry bust (an object, not a person).",
+        compositionRule: "Elegant. Hand touching the necklace pendant on the stand. No face or body visible."
       }
     ]
   },
@@ -762,29 +765,29 @@ export const portraitStyles: Record<string, StyleDefinition> = {
   portrait_soft: {
     id: 'portrait_soft',
     name: 'Soft Beauty',
-    cameraLens: "Shot on 100mm Macro f/2.8. Dreamy, ethereal, soft focus. Background is creamy skin tones.",
+    cameraLens: "Shot on 100mm Macro f/2.8. Dreamy, ethereal, soft focus. Background is a soft-focus vanity setting.",
     lightingSetup: "Softbox diffused lighting. No harsh shadows. 'Cloudy day' studio light. Very flattering.",
-    colorGrade: "Pastel, Air, Rose-tinted. Skincare advertisement aesthetic. Fresh and clean.",
+    colorGrade: "Pastel, Airy, Rose-tinted. Skincare advertisement aesthetic. Fresh and clean.",
     scenes: [
       {
-        label: "Cheek Rest",
-        environmentTexture: "Clean, glowing skin texture (cheek/jawline) in background.",
-        compositionRule: "Sweet pose. Hand resting gently against the cheek. Eyes closed (implied) in background."
+        label: "Vanity Mirror",
+        environmentTexture: "A soft-focus vanity mirror reflecting warm bokeh light.",
+        compositionRule: "Sweet pose. Hand resting gently on the edge of the mirror frame. No face or body visible."
       },
       {
-        label: "Chin Prop",
-        environmentTexture: "Soft skin tone of the neck and chin.",
-        compositionRule: "Thoughtful. Hand propped lightly under the chin."
+        label: "Cashmere Throw",
+        environmentTexture: "A soft folded cashmere throw on a vanity stool.",
+        compositionRule: "Thoughtful. Hand resting lightly on the folded throw. No face or body visible."
       },
       {
-        label: "Shoulder Touch",
-        environmentTexture: "Bare shoulder skin texture. Soft focus.",
-        compositionRule: "Elegant. Hand resting on the bare shoulder/collarbone."
+        label: "Silk Scarf",
+        environmentTexture: "A silk scarf draped over the back of a chair, soft focus.",
+        compositionRule: "Elegant. Hand resting on the draped silk scarf. No face or body visible."
       },
       {
         label: "White Robe",
-        environmentTexture: "Soft white spa robe texture and neck.",
-        compositionRule: "Spa Day. Hand resting on the upper chest/robe collar."
+        environmentTexture: "A soft white spa robe, folded on a spa bench beside a candle.",
+        compositionRule: "Spa Day. Hand resting on the folded robe. No body visible."
       }
     ]
   },
@@ -792,29 +795,29 @@ export const portraitStyles: Record<string, StyleDefinition> = {
   portrait_edgy: {
     id: 'portrait_edgy',
     name: 'Edgy Vogue',
-    cameraLens: "Shot on 35mm f/1.4. slightly wide, dynamic perspective. High contrast.",
-    lightingSetup: "Hard Light/Split Lighting. Strong contrast between light and shadow. Dramatic shadows on the face.",
+    cameraLens: "Shot on 35mm f/1.4. Slightly wide, dynamic perspective. High contrast.",
+    lightingSetup: "Hard Light/Split Lighting. Strong contrast between light and shadow. Dramatic shadows across the scene.",
     colorGrade: "Desaturated, cool tones, high structure. Grunge/Rock chic. BW or High Contrast Color.",
     scenes: [
       {
-        label: "Eye Frame",
-        environmentTexture: "Shadowed face, focus on one eye (blurred).",
-        compositionRule: "The Frame. Hand framing one eye (like a monocle or mask gesture)."
+        label: "Shadow Frame",
+        environmentTexture: "Dramatic shadow pattern (venetian blind or grille) cast across a plain dark wall.",
+        compositionRule: "The Frame. Hand catching the shadow pattern like a mask gesture. No face or body visible."
       },
       {
-        label: "Neck Grasp",
-        environmentTexture: "Shadowed neck/throat area.",
-        compositionRule: "Power pose. Hand grasping the neck or collar lightly. Dramatic."
+        label: "Leather Choker",
+        environmentTexture: "A black leather choker or collar resting on a dark surface.",
+        compositionRule: "Power pose. Hand resting beside the leather choker. No face or body visible."
       },
       {
-        label: "Face Shadow",
-        environmentTexture: "Face partially obscured by shadow. Dark background.",
-        compositionRule: "Mystery. Hand casting a shadow or resting on the forehead."
+        label: "Wall Shadow",
+        environmentTexture: "Dramatic shadow patterns cast across a dark textured wall.",
+        compositionRule: "Mystery. Hand casting a shadow shape against the wall. No face or body visible."
       },
       {
-        label: "Leather collar",
-        environmentTexture: "Black leather jacket collar and neck.",
-        compositionRule: "Attitude. Hand pulling the jacket collar."
+        label: "Leather Collar",
+        environmentTexture: "A black leather jacket, draped over a chair, collar visible.",
+        compositionRule: "Attitude. Hand pulling at the draped jacket's collar. No body visible."
       }
     ]
   }
