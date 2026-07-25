@@ -824,6 +824,27 @@ export const portraitStyles: Record<string, StyleDefinition> = {
 };
 
 
+// 2026-07-24: a live-generation test proved that simply telling the model
+// elsewhere in the prompt to "ignore the scene text if it says no face" is
+// not reliable — the concrete, nearby scene composition text apparently
+// outweighs an earlier abstract meta-instruction. Fix: physically strip the
+// stale phrase from the scene text used for Model/Portrait, and inject a
+// positive, concrete face-inclusion clause right next to the composition
+// rule instead of relying on the model to recall a rule from elsewhere.
+const STALE_NO_FACE_PHRASES = [
+  'No face or body visible.',
+  'No face visible.',
+  'No body visible.',
+];
+
+function sanitizeSceneTextForModel(text: string): string {
+  let result = text;
+  for (const phrase of STALE_NO_FACE_PHRASES) {
+    result = result.split(` ${phrase}`).join('').split(phrase).join('');
+  }
+  return result.trim();
+}
+
 export function getStylePrompt(styleKey: string, collection: 'classic' | 'vibrant' | 'lifestyle' | 'holiday' | 'model' | 'portrait'): string {
   let styles: Record<string, StyleDefinition>;
   if (collection === 'classic') styles = classicChicStyles;
@@ -834,7 +855,7 @@ export function getStylePrompt(styleKey: string, collection: 'classic' | 'vibran
   else styles = portraitStyles;
 
   const style = styles[styleKey];
-  
+
   if (!style) return "";
 
   let eligibleScenes = style.scenes;
@@ -842,9 +863,9 @@ export function getStylePrompt(styleKey: string, collection: 'classic' | 'vibran
   // TIME-AWARE LOGIC for Smart Seasonal
   if (styleKey === 'model_smart') {
     const currentMonth = new Date().getMonth(); // 0 = Jan, 11 = Dec
-    
+
     // Filter scenes that include the current month
-    const seasonalScenes = style.scenes.filter(scene => 
+    const seasonalScenes = style.scenes.filter(scene =>
       scene.seasons && scene.seasons.includes(currentMonth)
     );
 
@@ -856,14 +877,22 @@ export function getStylePrompt(styleKey: string, collection: 'classic' | 'vibran
 
   const randomScene = eligibleScenes[Math.floor(Math.random() * eligibleScenes.length)];
 
+  const generatesModel = collection === 'model' || collection === 'portrait';
+  const environmentText = generatesModel
+    ? sanitizeSceneTextForModel(randomScene.environmentTexture)
+    : randomScene.environmentTexture;
+  const compositionText = generatesModel
+    ? `${sanitizeSceneTextForModel(randomScene.compositionRule)} The model's face is fully visible and in focus, with a natural expression suited to this scene's mood — this is a beauty/editorial portrait, not a hand-only product shot.`
+    : randomScene.compositionRule;
+
   return `
     [VISUAL STYLE SETTINGS]
     - SCENE VARIATION: ${randomScene.label}
-    - ENVIRONMENT: ${randomScene.environmentTexture}
+    - ENVIRONMENT: ${environmentText}
     - LIGHTING: ${style.lightingSetup}
     - LENS OPTICS: ${style.cameraLens}
     - COLOR GRADING: ${style.colorGrade}
-    - COMPOSITION: ${randomScene.compositionRule}
+    - COMPOSITION: ${compositionText}
   `;
 }
 
@@ -956,32 +985,55 @@ export const generateDynamicThemePrompt = async (themeKeyOrDescription: string, 
         const imagePart = imageBase64 && mimeType ? fileToGenerativePart(imageBase64, mimeType) : null;
         
         let specificStyleInstructions = themeKeyOrDescription;
-        
+        let matchedCollection: 'classic' | 'vibrant' | 'lifestyle' | 'holiday' | 'model' | 'portrait' | null = null;
+
         // Check Classic Collection
         if (classicChicStyles[themeKeyOrDescription]) {
+            matchedCollection = 'classic';
             specificStyleInstructions = getStylePrompt(themeKeyOrDescription, 'classic');
-        } 
+        }
         // Check Vibrant Collection
         else if (vibrantBoldStyles[themeKeyOrDescription]) {
+            matchedCollection = 'vibrant';
             specificStyleInstructions = getStylePrompt(themeKeyOrDescription, 'vibrant');
         }
         // Check Lifestyle Collection
         else if (lifestyleCozyStyles[themeKeyOrDescription]) {
+            matchedCollection = 'lifestyle';
             specificStyleInstructions = getStylePrompt(themeKeyOrDescription, 'lifestyle');
         }
         // Check Holiday Collection
         else if (holidayStyles[themeKeyOrDescription]) {
+            matchedCollection = 'holiday';
             specificStyleInstructions = getStylePrompt(themeKeyOrDescription, 'holiday');
         }
         // Check Model Collection
         else if (modelStyles[themeKeyOrDescription]) {
+            matchedCollection = 'model';
             specificStyleInstructions = getStylePrompt(themeKeyOrDescription, 'model');
         }
         // Check Portrait Collection
         else if (portraitStyles[themeKeyOrDescription]) {
+            matchedCollection = 'portrait';
             specificStyleInstructions = getStylePrompt(themeKeyOrDescription, 'portrait');
         }
-        
+
+        // 2026-07-24: John asked for Model/Portrait to generate a real (fabricated,
+        // non-identifiable) model's face + hand together, opposite of every other
+        // collection. Scoped to exactly these two — Classic/Vibrant/Lifestyle/Holiday
+        // must stay hand-only, that rule is still correct there. Each style's stored
+        // compositionRule text still says "No face or body visible" (stale) — that phrase
+        // is physically stripped by getStylePrompt()'s sanitizeSceneTextForModel() for
+        // these two collections (a live test proved just telling the model to "ignore"
+        // the phrase elsewhere in the prompt was not reliable enough).
+        const generatesModel = matchedCollection === 'model' || matchedCollection === 'portrait';
+        const identityLockText = generatesModel
+            ? `MANDATORY NAIL IDENTITY LOCK: "The input image shows the salon's actual nail art — preserve that exact nail art, shape, length, and color pattern 100% faithfully and apply it onto the hand of the generated model created in this scene. Do not alter, simplify, recolor, or otherwise reinterpret the nail design in any way."`
+            : `MANDATORY IDENTITY LOCK: "Preserve exact nail art, length, shape, and design from the input image 100%. Do not alter the nail art. Keep exact nail shape and design. Match skin tone and hand features 100%."`;
+        const personRuleText = generatesModel
+            ? `MANDATORY GENERATED MODEL: This collection is an intentional full beauty/editorial shot, not a hand-only product shot. The final image MUST show a realistic, camera-ready professional model's face, hair, and upper body together with her hand in frame — a hand-only crop with no face is a failed generation for this collection. Pose her naturally to fit the style instructions below (e.g. her hand resting near her own face, hand-to-hand, or holding an object close to her face). The model must be an entirely fabricated, stock-photography-style person — never a depiction of any real, identifiable individual (no celebrity, no influencer, no specific real person's likeness), and her face should look different each generation, not reused.`
+            : `MANDATORY NO FABRICATED PERSON: "The hand from the input image is the ONLY human element allowed in the frame. Never add a face, chin, cheek, neck, shoulder, hair, or any other body part that is not already visible in the input image — even if the style below mentions a 'model' or 'beauty' mood, that mood comes from props, fabric, and lighting only, never from inventing a person. If the style text below conflicts with this rule, this rule wins."`;
+
         const dateStr = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
         const variationSeed = buildVariationSeed();
         const systemInstruction = `You are an expert AI Prompt Engineer and High-End Fashion Editor for the premium brand "Zen Nail Spa."
@@ -1002,7 +1054,8 @@ export const generateDynamicThemePrompt = async (themeKeyOrDescription: string, 
 
         ### STEP 3: THE COMPOSITION & BRANDING RULES
         - Mandate "Negative Space" in the top-right 20% (Soft bokeh or clean wall texture).
-        - MANDATORY IDENTITY LOCK: "Preserve exact nail art, length, shape, and design from the input image 100%. Do not alter the nail art. Keep exact nail shape and design. Match skin tone and hand features 100%."
+        - ${identityLockText}
+        - ${personRuleText}
         - BRANDING OVERLAY: Command the image generator to overlay "Zen Nail Spa" in a large, elegant GOLD script calligraphy font centered at the bottom.
         - CONTACT DETAILS: Directly below the salon name, mandate the overlay of this exact text in professional white sans-serif font: "(919) 316-7856" and "105 NC-54 Hwy, Ste 277A, Durham, NC 27713".
         - BACKGROUND FADE: Specify a "glass-blur fade" or "soft dark gradient" behind the text area to ensure readability.
