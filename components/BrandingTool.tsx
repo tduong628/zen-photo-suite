@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { LanguagePack } from '../types';
 import { generateDynamicThemePrompt, generateBrandedImageService } from '../services/geminiService';
+import { applyBrandingOverlay } from '../services/brandingOverlay';
 import { saveToGallery } from '../services/galleryService';
 import { injectS24UltraMetadata } from '../services/exifService';
 import Loader from './Loader';
@@ -190,16 +191,21 @@ const BrandingTool: React.FC<BrandingToolProps> = ({ langPack, showNotification,
 
             setLoadingStage('Rendering high-fidelity signature frames...');
             const results = await generateBrandedImageService(fullPrompt, originalFile.base64, originalFile.mimeType, "2K");
-            
+
             if (results && results.length > 0) {
-                const imageUrls = results.map(r => `data:image/png;base64,${r}`);
+                setLoadingStage('Compositing real logo + contact details...');
+                // Every branded image the user sees, selects, downloads, or saves
+                // to the gallery must carry the REAL logo — never AI-drawn text.
+                // applyBrandingOverlay throws on failure rather than silently
+                // falling back to text, so a compositor failure surfaces here.
+                const imageUrls = await Promise.all(results.map(r => applyBrandingOverlay(r)));
                 setBrandedImages(imageUrls);
                 setSelectedBrandedImage(imageUrls[0]);
-                results.forEach(r => saveToGallery({
+                imageUrls.forEach(dataUrl => saveToGallery({
                     tool: 'Photo Branding',
                     style: templateId,
                     prompt: fullPrompt,
-                    imageBase64: r,
+                    imageBase64: dataUrl.split(',')[1],
                 }));
             } else {
                 throw new Error('API returned no image data.');

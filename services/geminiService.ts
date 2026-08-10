@@ -920,7 +920,7 @@ const NO_REAL_WORLD_BRANDING = `### STEP 3B: NO REAL-WORLD BRANDING (mandatory, 
         - RENDER INSTEAD: plain unmarked leather with plain unmarked hardware, blank untitled book covers, unlabeled bottles with plain caps, solid or abstract non-signature fabric patterns, a bare wheel hub with no emblem, and plain unprinted bags. If a real object would normally carry a mark, leave that area blank, plain, or softly out of focus.
         - VOCABULARY: words like "designer", "luxury", "high-end", "couture", and "premium" anywhere in this brief describe MATERIAL QUALITY, CRAFTSMANSHIP, and PRICE TIER — never a nameable maker. Do not resolve them by rendering an actual brand.
         - FAILURE STANDARD: any recognizable real-world brand mark, or a design distinctive enough to identify a specific maker, is a FAILED generation — even if it is small, blurred, or partially cropped.
-        - The ONLY branding permitted anywhere in the image is "Zen Nail Spa"'s own name/logo and contact text described in STEP 3 above; nothing else in the frame carries any mark.`;
+        - This image must contain NO text, lettering, or logo of any kind at all, including "Zen Nail Spa"'s own name and contact details — see STEP 3's NO AI-DRAWN BRANDING clause above. The salon's branding is composited later in post-production from the real logo file, never drawn by the model.`;
 
 // Appended to STEP 5's variation seed, right next to the rolled prop/surface/
 // accent — nearby concrete wording binds better than a distant abstract rule.
@@ -1188,9 +1188,7 @@ export const generateDynamicThemePrompt = async (themeKeyOrDescription: string, 
         - ${personRuleText}
         - ${faceUnobstructedText}
         - ${handAnatomyText}
-        - BRANDING OVERLAY: Command the image generator to overlay "Zen Nail Spa" in a large, elegant GOLD script calligraphy font centered at the bottom.
-        - CONTACT DETAILS: Directly below the salon name, mandate the overlay of this exact text in professional white sans-serif font: "(919) 316-7856" and "105 NC-54 Hwy, Ste 277A, Durham, NC 27713".
-        - BACKGROUND FADE: Specify a "glass-blur fade" or "soft dark gradient" behind the text area to ensure readability.
+        - NO AI-DRAWN BRANDING (mandatory): leave the bottom 30% of the frame as clean, low-detail negative space — softly darkened or slightly out-of-focus is fine, but do NOT draw, write, letter, stamp, or render any text, logo, wordmark, signage, or lettering of any kind anywhere in this image, including the salon's own name or contact details. The frame must be completely free of text. The real logo and contact text are composited afterward in post-production, pixel-for-pixel from the salon's actual logo file — this step's only job is to leave that space clean. (This 30% figure is coupled to SCRIM_HEIGHT_FRACTION in services/brandingOverlay.ts — do not change one without the other.)
 
         ${NO_REAL_WORLD_BRANDING}
 
