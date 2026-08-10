@@ -23,6 +23,19 @@ const SCRIM_HEIGHT_FRACTION = 0.30;
 const SCRIM_BASE_ALPHA = 75 / 255;
 const SCRIM_MAX_ALPHA = 195 / 255;
 const SCRIM_EASE = 1.4;
+// Fraction of the scrim's OWN height, top-down, over which alpha ramps from
+// 0 up to the SCRIM_BASE_ALPHA/SCRIM_EASE curve, instead of jumping straight
+// to SCRIM_BASE_ALPHA at the scrim's very top edge. Without this the band's
+// top edge jumps to ~29% opacity in a single row -- measured on a flat
+// bright test image as a 35.9-unit mean-row-luminance step (287x the ~0.125
+// typical row-to-row delta), which reads as a hard horizontal line across
+// the photo, especially over bright backgrounds like marble or wicker. 8%
+// keeps the ramp entirely inside the LOGO_TOP_PADDING_FRACTION gap above the
+// logo -- that gap is always LOGO_TOP_PADDING_FRACTION / SCRIM_HEIGHT_FRACTION
+// =~ 11.7% of the scrim's height regardless of image size -- so the logo/
+// phone/address rows below it keep exactly the alpha they had before this
+// fix. Matches apply_branding_overlay.py's SCRIM_FEATHER_FRACTION.
+const SCRIM_FEATHER_FRACTION = 0.08;
 
 // Taller wordmark + circular flourish (672x487) — matches
 // apply_branding_overlay.py's LOGO_WIDTH_FRACTION['zen-nail-spa'].
@@ -64,15 +77,32 @@ function toImageSrc(imageDataUrlOrBase64: string): string {
   return `data:image/png;base64,${imageDataUrlOrBase64}`;
 }
 
+/** Alpha at fraction t (0 = scrim top, 1 = scrim bottom): the eased
+ * base->max curve, feathered down to 0 near t=0 -- see SCRIM_FEATHER_FRACTION. */
+function scrimAlphaAt(t: number): number {
+  const curveAlpha = SCRIM_BASE_ALPHA + (SCRIM_MAX_ALPHA - SCRIM_BASE_ALPHA) * Math.pow(t, SCRIM_EASE);
+  const feather = Math.min(1, t / SCRIM_FEATHER_FRACTION);
+  return curveAlpha * feather;
+}
+
 function drawScrim(ctx: CanvasRenderingContext2D, width: number, height: number, scrimHeight: number): void {
   const top = height - scrimHeight;
   const gradient = ctx.createLinearGradient(0, top, 0, height);
-  const steps = 32;
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    const alpha = SCRIM_BASE_ALPHA + (SCRIM_MAX_ALPHA - SCRIM_BASE_ALPHA) * Math.pow(t, SCRIM_EASE);
-    gradient.addColorStop(t, `rgba(8, 6, 5, ${alpha})`);
+
+  // Densely sample the feather zone on its own so the ramp from 0 renders
+  // smoothly instead of as 2-3 coarse canvas gradient stops.
+  const featherSteps = 12;
+  for (let i = 0; i <= featherSteps; i++) {
+    const t = (i / featherSteps) * SCRIM_FEATHER_FRACTION;
+    gradient.addColorStop(t, `rgba(8, 6, 5, ${scrimAlphaAt(t)})`);
   }
+
+  const curveSteps = 32;
+  for (let i = 1; i <= curveSteps; i++) {
+    const t = SCRIM_FEATHER_FRACTION + (i / curveSteps) * (1 - SCRIM_FEATHER_FRACTION);
+    gradient.addColorStop(t, `rgba(8, 6, 5, ${scrimAlphaAt(t)})`);
+  }
+
   ctx.fillStyle = gradient;
   ctx.fillRect(0, top, width, scrimHeight);
 }
