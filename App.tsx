@@ -20,7 +20,8 @@ const prefersReducedMotion = (): boolean =>
 const App: React.FC = () => {
     const [currentLang, setCurrentLang] = useState<Language>('EN');
     const [currentView, setCurrentView] = useState<View>(View.MainMenu);
-    const [notification, setNotification] = useState<{ message: string; type: NotificationType } | null>(null);
+    const [notification, setNotification] = useState<{ id: number; message: string; type: NotificationType } | null>(null);
+    const notificationIdRef = useRef(0);
     const [inboxImage, setInboxImage] = useState<{ base64: string; mimeType: string } | null>(null);
     // Reduced-motion users never see the splash at all rather than a single
     // un-animated frame of it (a partial fix isn't full compliance).
@@ -45,8 +46,17 @@ const App: React.FC = () => {
         mainRef.current?.focus();
     }, [currentView]);
 
+    // id forces a fresh Notification mount on every call (via the `key` prop
+    // below) even when message+type are byte-identical to the previous call
+    // — e.g. two consecutive branding-overlay failures both surface the same
+    // generic errorApiGeneric string. Without a remount, React reuses the
+    // existing instance and its [message, type] effect dependency array sees
+    // no change, so the display timer never restarts and a second failure
+    // arriving while the first toast is still visible can silently fail to
+    // extend or re-show it.
     const showNotification = useCallback((message: string, type: NotificationType = 'error') => {
-        setNotification({ message, type });
+        notificationIdRef.current += 1;
+        setNotification({ id: notificationIdRef.current, message, type });
     }, []);
 
     const navigateTo = (view: View) => {
@@ -98,7 +108,7 @@ const App: React.FC = () => {
                 </div>
             </main>
 
-            {notification && <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
+            {notification && <Notification key={notification.id} message={notification.message} type={notification.type} onClose={() => setNotification(null)} />}
         </div>
     );
 };
