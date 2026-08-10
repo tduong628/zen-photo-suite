@@ -289,7 +289,7 @@ export const lifestyleCozyStyles: Record<string, StyleDefinition> = {
     scenes: [
       {
         label: "Luxury Car",
-        environmentTexture: "Leather steering wheel texture (blurred logo) and dashboard. Soft daylight coming through the windshield.",
+        environmentTexture: "Leather steering wheel texture (bare unmarked hub) and dashboard. Soft daylight coming through the windshield.",
         compositionRule: "POV (Point of View) shot. Hand resting on the wheel or adjusting a vent."
       },
       {
@@ -837,10 +837,111 @@ const STALE_NO_FACE_PHRASES = [
   'No body visible.',
 ];
 
+// 2026-07-25: SECOND live defect — Model/Portrait output came back with the
+// prop (a latte cup) covering the model's ENTIRE face, i.e. a faceless
+// "beauty portrait". Root cause was two-part: (1) the personRuleText below
+// literally suggested "holding an object close to her face" as a pose, and
+// (2) these scenes' own composition text says "Hand holding the cup" /
+// "up to the light" / "like a mask gesture" — all of which put the prop in
+// the face region once a face actually exists in frame. That wording was
+// written when these scenes were hand-only, where it was harmless.
+// Fix: rewrite the face-conflicting composition phrases for Model/Portrait
+// only; the hand-only collections keep the original wording (still correct).
+const FACE_SAFE_SCENE_REWRITES: Record<string, string> = {
+  'Hand holding the cup.':
+    'Hand cradling the cup at chest height, well below the chin, fingers relaxed and softly extended along the cup rather than clenched around it — the cup never rises into or in front of the face.',
+  'Hand holding the cold drink.':
+    'Hand cradling the cold drink at chest height, well below the chin, fingers relaxed and softly extended rather than clenched around it — the drink never rises into or in front of the face.',
+  'Hand holding the glass stem.':
+    'Fingers resting lightly against the glass stem at chest height, off to one side of the face, relaxed and softly extended rather than gripping — the glass never rises into or in front of the face.',
+  'Hand holding the sunglasses up to the light.':
+    'Sunglasses resting on the surface catching the light, with the hand relaxed beside them, fingers softly extended and nails facing the camera — the hand does not clench around the sunglasses, and nothing covers the eyes or face.',
+  'Hand catching the shadow pattern like a mask gesture.':
+    'Hand held open and relaxed beside the face, clear of it, catching the shadow pattern on its skin — the hand never covers or masks the face; the shadow may fall across the background and shoulders, never across the eyes.',
+};
+
+// 2026-07-25 pass 2 — the impossible-hand defect. STEP 3's nail identity lock
+// makes "all nail plates flat and visible" non-negotiable; a GRIPPING pose
+// curls the fingers, which physically rotates the nails away from camera.
+// Facing that unsatisfiable pair, the generator keeps the nails camera-facing
+// and breaks the hand instead — pasting flat nail plates onto curled fingers
+// and dropping the thumb because a thumb in a grip would occlude them.
+// The durable fix is removing the conflict at source: don't ask for a tight
+// grip. Applies to EVERY collection — nail visibility is the product in all
+// six, so the conflict is universal. Only genuinely closed grips are rewritten;
+// light-touch scenes already pose safely and are left alone.
+const GRIP_SOFTENING_REWRITES: Record<string, string> = {
+  'Hand holding a warm mug or resting near the glass.':
+    'Hand resting beside the warm mug, fingers relaxed and softly extended with the nails facing the camera, rather than wrapped around it.',
+  'Hand holding shopping bag handles (straps).':
+    'Hand draped over the shopping bag straps, fingers relaxed and softly extended rather than clenched around them.',
+  'Hand holding a leaf.':
+    'A leaf balanced on relaxed, softly extended fingers, nails facing the camera — not pinched or gripped.',
+  'Hand holding an ornament.':
+    'An ornament balanced on relaxed, softly extended fingers, nails facing the camera — not pinched or gripped.',
+  'Hand holding a champagne flute.':
+    "Fingers resting lightly along the champagne flute's stem, relaxed and softly extended with the nails facing the camera, rather than gripping.",
+  'Hand holding a sparkler.':
+    'A sparkler cradled between relaxed, softly extended fingers, nails facing the camera — not clenched in a fist.',
+  'Hand holding the stem of a glass (or resting near it).':
+    'Fingers resting lightly against the stem of the glass, relaxed and softly extended with the nails facing the camera, rather than gripping.',
+  'Hand holding a crystal flute.':
+    "Fingers resting lightly along the crystal flute's stem, relaxed and softly extended with the nails facing the camera, rather than gripping.",
+  'Hand clutching the bag.':
+    'Hand resting on the bag, fingers relaxed and softly extended across it with the nails facing the camera, rather than clenched around it.',
+  'Hand adjusting the necklace on the stand.':
+    'Hand resting beside the necklace on the stand, fingers relaxed and softly extended with the nails facing the camera.',
+  'Hand resting on the draped coat or holding leather gloves.':
+    'Hand resting on the draped coat beside a pair of leather gloves, fingers relaxed and softly extended with the nails facing the camera.',
+  'Hand placing the earring on the tray.':
+    'Hand resting beside the earring on the tray, fingers relaxed and softly extended with the nails facing the camera.',
+  "Hand pulling at the draped jacket's collar.":
+    "Hand resting against the draped jacket's collar, fingers relaxed and softly extended with the nails facing the camera, rather than pulling or clenching.",
+};
+
+// Appended to EVERY collection's composition text. The literal rewrites cover
+// today's scene list; this is the safety net for any scene added later, and it
+// states the priority order explicitly so the generator resolves the conflict
+// by changing the POSE rather than by breaking the hand.
+const POSE_SAFETY_CLAUSE = 'Pose priority: the hand must stay anatomically possible AND the nail art must read clearly — if those two would conflict, change the POSE (relax and extend the fingers, tilt or rotate the whole hand, rest it rather than grip) until both are true at once. Never resolve the conflict by rotating nail plates independently of the fingers they sit on, and never drop or hide the thumb to make the nails easier to show. Thumb staging: strongly prefer a hand angle where the THUMB and its nail are visible in frame alongside the fingers — five visible nails read as real and show more of the manicure. If the pose you first imagined would tuck the thumb out of sight, rotate the hand slightly toward the camera so it comes into view. (If the hand is closed around an object, a visible thumb is not a preference but a hard requirement — see clause 2.)';
+
+// 2026-08-09: ported from TrueFrame Studio's HARD RULE 8 anti-trademark fix
+// (~/.claude/skills/trueframe-studio/scripts/build_prompt.py
+// NO_REAL_WORLD_BRANDING_CLAUSE). Root cause closed: every prior branding rule
+// in this pipeline only ever suppressed the salon's OWN logo/text overlay —
+// nothing stopped the model inventing a REAL trademark (a Gucci-style GG, a
+// car maker's badge, a printed boutique bag) on an object inside the photo.
+// That is a legal exposure in commercial salon marketing. Kept in sync with
+// TrueFrame and the Deluxe sibling file (deluxe photo editor/services/
+// geminiService.ts) — do not diverge the wording.
+const NO_REAL_WORLD_BRANDING = `### STEP 3B: NO REAL-WORLD BRANDING (mandatory, global)
+        - Every object, prop, garment, accessory, packaging item, vehicle part, and surface visible in the frame must be GENERIC and UNBRANDED. No visible logo, wordmark, brand name, monogram or repeating-initials pattern, interlocking-letter emblem, maker's mark, hallmark, badge, crest, or any trademark-recognizable design cue belonging to a real company, fashion house, or manufacturer may appear anywhere.
+        - HIGH-RISK OBJECTS: this specifically covers handbags and clutches (including quilted leather with gold turnlock hardware), sunglasses and sunglasses cases (including temple logos), perfume bottles, cosmetics tubes and compacts (labels, caps, engraved names), wine and champagne bottles (labels and foil), shopping bags, boxes, tissue and ribbon, book covers and spines (titles and publisher marks), scarves and coats (signature check or plaid patterns), jewelry (signature motifs, and signature-colored boxes or pouches), cups, mugs and coffee sleeves (café logos), garment tags and labels, and vehicle steering-wheel hubs, dashboards and wheels (manufacturer badges and emblems).
+        - RENDER INSTEAD: plain unmarked leather with plain unmarked hardware, blank untitled book covers, unlabeled bottles with plain caps, solid or abstract non-signature fabric patterns, a bare wheel hub with no emblem, and plain unprinted bags. If a real object would normally carry a mark, leave that area blank, plain, or softly out of focus.
+        - VOCABULARY: words like "designer", "luxury", "high-end", "couture", and "premium" anywhere in this brief describe MATERIAL QUALITY, CRAFTSMANSHIP, and PRICE TIER — never a nameable maker. Do not resolve them by rendering an actual brand.
+        - FAILURE STANDARD: any recognizable real-world brand mark, or a design distinctive enough to identify a specific maker, is a FAILED generation — even if it is small, blurred, or partially cropped.
+        - The ONLY branding permitted anywhere in the image is "Zen Nail Spa"'s own name/logo and contact text described in STEP 3 above; nothing else in the frame carries any mark.`;
+
+// Appended to STEP 5's variation seed, right next to the rolled prop/surface/
+// accent — nearby concrete wording binds better than a distant abstract rule.
+// Mirrors TrueFrame's UNBRANDED_PROPS_CLAUSE.
+const UNBRANDED_PROPS_REMINDER = '- UNBRANDED PROPS (mandatory): the prop, surface, and accent above are generic unbranded objects — no logo, wordmark, monogram, or maker\'s emblem on any of them (see STEP 3B).';
+
+function softenGripPoses(text: string): string {
+  let result = text;
+  for (const [phrase, replacement] of Object.entries(GRIP_SOFTENING_REWRITES)) {
+    result = result.split(phrase).join(replacement);
+  }
+  return result;
+}
+
 function sanitizeSceneTextForModel(text: string): string {
   let result = text;
   for (const phrase of STALE_NO_FACE_PHRASES) {
     result = result.split(` ${phrase}`).join('').split(phrase).join('');
+  }
+  for (const [phrase, replacement] of Object.entries(FACE_SAFE_SCENE_REWRITES)) {
+    result = result.split(phrase).join(replacement);
   }
   return result.trim();
 }
@@ -881,9 +982,13 @@ export function getStylePrompt(styleKey: string, collection: 'classic' | 'vibran
   const environmentText = generatesModel
     ? sanitizeSceneTextForModel(randomScene.environmentTexture)
     : randomScene.environmentTexture;
-  const compositionText = generatesModel
+  const baseComposition = generatesModel
     ? `${sanitizeSceneTextForModel(randomScene.compositionRule)} The model's face is fully visible and in focus, with a natural expression suited to this scene's mood — this is a beauty/editorial portrait, not a hand-only product shot.`
     : randomScene.compositionRule;
+  // Grip-softening + pose-priority apply to EVERY collection: the
+  // curled-fingers-vs-flat-nails conflict is driven by the nail identity lock,
+  // which every collection carries.
+  const compositionText = `${softenGripPoses(baseComposition)} ${POSE_SAFETY_CLAUSE}`;
 
   return `
     [VISUAL STYLE SETTINGS]
@@ -927,10 +1032,10 @@ const VARIATION_POOLS = {
         'a glass of sparkling rosé',
         'a silk ribbon loosely draped between the fingers',
         'a fresh peony bloom',
-        'a designer sunglasses case',
-        'a hardcover art book with gilded page edges',
+        'a plain unbranded sunglasses case',
+        'a hardcover art book with gilded page edges and a blank, untitled cover',
         'a delicate gold chain necklace pooled nearby',
-        'a frosted glass perfume bottle',
+        'an unlabeled frosted glass perfume bottle',
         'a matcha latte in a stoneware mug',
         'fairy lights softly blurred in the grip',
         'a vintage hand mirror',
@@ -967,14 +1072,24 @@ const VARIATION_POOLS = {
     ],
 } as const;
 
-const buildVariationSeed = (): string => {
+// `faceSafe` (Model/Portrait) qualifies the prop line so a drink-type prop can
+// never be staged over the model's face — the 2026-07-25 defect, where the
+// rolled prop (espresso cup / matcha latte) ended up covering the whole face.
+// The prop pool itself is unchanged; only its placement is constrained.
+const buildVariationSeed = (faceSafe: boolean = false): string => {
+    // "gripping" was itself part of the impossible-hand defect — it invited the
+    // closed grip that forces curled fingers. Prop is now staged NEAR the hand.
+    const propLine = faceSafe
+        ? `- Prop (stage it beside or under the hand, or cradle it with relaxed, softly extended fingers — do not clench the hand around it; keep it at chest height or below the chin, and NEVER in front of the model's face): ${pickOne(VARIATION_POOLS.prop)}`
+        : `- Prop (stage it beside or under the hand, or cradle it with relaxed, softly extended fingers — do not clench the hand around it): ${pickOne(VARIATION_POOLS.prop)}`;
     return [
         `- Camera: ${pickOne(VARIATION_POOLS.cameraAngle)}`,
         `- Lighting: ${pickOne(VARIATION_POOLS.lightingMood)}`,
-        `- Prop (if pose allows gripping/interaction): ${pickOne(VARIATION_POOLS.prop)}`,
+        propLine,
         `- Surface: ${pickOne(VARIATION_POOLS.surface)}`,
         `- Scene accent: ${pickOne(VARIATION_POOLS.accent)}`,
         `- Composition: ${pickOne(VARIATION_POOLS.composition)}`,
+        UNBRANDED_PROPS_REMINDER,
         `- Uniqueness token: ${Date.now().toString(36)}${Math.floor(Math.random() * 1e6).toString(36)} (ignore visually — anti-duplication marker)`,
     ].join('\n        ');
 };
@@ -1031,11 +1146,26 @@ export const generateDynamicThemePrompt = async (themeKeyOrDescription: string, 
             ? `MANDATORY NAIL IDENTITY LOCK: "The input image shows the salon's actual nail art — preserve that exact nail art, shape, length, and color pattern 100% faithfully and apply it onto the hand of the generated model created in this scene. Do not alter, simplify, recolor, or otherwise reinterpret the nail design in any way."`
             : `MANDATORY IDENTITY LOCK: "Preserve exact nail art, length, shape, and design from the input image 100%. Do not alter the nail art. Keep exact nail shape and design. Match skin tone and hand features 100%."`;
         const personRuleText = generatesModel
-            ? `MANDATORY GENERATED MODEL: This collection is an intentional full beauty/editorial shot, not a hand-only product shot. The final image MUST show a realistic, camera-ready professional model's face, hair, and upper body together with her hand in frame — a hand-only crop with no face is a failed generation for this collection. Pose her naturally to fit the style instructions below (e.g. her hand resting near her own face, hand-to-hand, or holding an object close to her face). The model must be an entirely fabricated, stock-photography-style person — never a depiction of any real, identifiable individual (no celebrity, no influencer, no specific real person's likeness), and her face should look different each generation, not reused.`
+            ? `MANDATORY GENERATED MODEL: This collection is an intentional full beauty/editorial shot, not a hand-only product shot. The final image MUST show a realistic, camera-ready professional model's face, hair, and upper body together with her hand in frame — a hand-only crop with no face is a failed generation for this collection. Pose her naturally to fit the scene's mood, for example her hand raised beside her jawline, fingertips resting lightly against her collarbone or touching her hair at the temple, or held out toward camera at chest height. The model must be an entirely fabricated, stock-photography-style person — never a depiction of any real, identifiable individual (no celebrity, no influencer, no specific real person's likeness), and her face should look different each generation, not reused.`
             : `MANDATORY NO FABRICATED PERSON: "The hand from the input image is the ONLY human element allowed in the frame. Never add a face, chin, cheek, neck, shoulder, hair, or any other body part that is not already visible in the input image — even if the style below mentions a 'model' or 'beauty' mood, that mood comes from props, fabric, and lighting only, never from inventing a person. If the style text below conflicts with this rule, this rule wins."`;
 
+        // 2026-07-25 fix 1 of 2 — face occlusion. Two live Deluxe beauty portraits
+        // came back with a latte cup covering the model's whole face. This clause
+        // has to be a hard, positive, overriding mandate: the earlier abstract
+        // "face is fully visible" wording lost to the concrete prop instruction.
+        const faceUnobstructedText = generatesModel
+            ? `MANDATORY FACE MUST BE UNOBSTRUCTED (overrides any scene, prop, or variation-seed instruction that conflicts with it): The model's entire face — both eyes, nose, mouth, and chin — must be fully visible, in focus, unobstructed, and well lit. NOTHING may cover, overlap, or pass in front of her face: no cup, mug, glass, bottle, phone, fan, book, sunglasses, flower, or any other prop; no hand, fingers, or nails; no hair falling across the eyes; no heavy shadow across the eyes. Any prop she is holding stays at chest height or lower, BELOW the chin line, or off to one side clear of the head — never raised into the face region, never between the camera and her face. If a prop and the face would occupy the same area of the frame, the PROP moves, never the face. Her hand must be positioned beside, below, or clear of the face so that both the nail art AND the full face are simultaneously and completely visible. An image where the face is covered, cropped out, or hidden behind an object is a FAILED generation.`
+            : '';
+
+        // 2026-07-25 fix 2 of 2 — hand anatomy. The same bad generations produced a
+        // malformed stubby thumb whose nail plate looked melted/wrapped around the
+        // fingertip. Nothing in this pipeline had EVER constrained hand anatomy —
+        // the S24 realism signature only covers skin texture. The hand is the actual
+        // product in every collection, so this is unconditional, not Model-only.
+        const handAnatomyText = `MANDATORY HAND ANATOMY CONTRACT (the hand is the product being sold; an impossible hand ruins the photo no matter how good the rest is). Every clause must be simultaneously true: (1) DIGIT COUNT: exactly five digits on each visible hand — four fingers plus exactly one thumb. No extra, missing, duplicated, merged, fused, or floating digits. Exactly one nail per digit. (2) THUMB: the thumb must be present and clearly visible whenever the hand GRIPS, HOLDS, WRAPS AROUND, PINCHES, or otherwise closes on an object — a hand holding something with no thumb at all is anatomically impossible and is an automatic failure. In open, relaxed, resting, or draped poses the thumb may fall behind the hand if that is genuinely how the pose reads, but STRONGLY PREFER a hand angle that keeps the thumb and its nail in view, because five visible nails show more of the manicure. Whenever the thumb is visible it must be shorter and thicker than the fingers, set lower on the side of the palm at a natural opposed angle, on the correct side for the hand shown (left vs right) — never a stubby stump, never rendered as a fifth finger in the row. (3) FINGER LENGTHS: middle finger longest; index and ring roughly equal and slightly shorter; pinky clearly the shortest by an obvious margin. The pinky must never be drawn longer than, or extending past, the ring finger. (4) NAIL-PLATE ORIENTATION — THE CRITICAL ONE: each nail plate must face the same direction its own finger actually points. Nail orientation follows the fingers; the fingers never twist to follow the nails. If the back of the hand faces the camera and the fingers curl toward the palm, their nails necessarily rotate AWAY from camera — in that pose you would see the fingertips and the edges of the nails, NOT flat full-face nail plates. It is FORBIDDEN to show the back of the hand and flat camera-facing nail plates on curled fingers at the same time; that requires the fingertips to bend backward over the hand and is impossible. If the pose you have chosen would hide the nail art, CHANGE THE POSE — relax and extend the fingers, tilt or rotate the whole hand, or show the palm side — until the nails are naturally camera-facing. Never rotate, paste, or re-orient a nail plate independently of the finger it sits on. (5) JOINT LIMITS: no finger or thumb bends backward past a natural joint limit. No hyperextension of the fingertips over the back of the hand. Knuckles, joints, and creases sit where real anatomy puts them. (6) NAIL GEOMETRY: each nail plate sits flat on its own nail bed, following that fingertip's natural curve, with a clean crisp edge — never melting, smearing, wrapping, or bending around the side or under the tip of a finger, never extending past the flesh outline, never merging into the adjacent finger. (7) PROP OCCLUSION: the hand and any prop must have ONE coherent depth relationship. Every finger of a given hand is consistently either in front of or behind the prop as the pose dictates — the prop must never appear to pass through the hand, and fingers must not alternate in front of and behind the same rigid object. (8) POSE PREFERENCE: prefer a relaxed, open, resting, draped, or lightly cradling hand over a tight closed grip. A clenched grip is what forces the impossible curled-fingers-with-flat-nails compromise — avoid it unless the scene truly requires it, and even then keep the fingers loose and the thumb visible.`;
+
         const dateStr = new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" });
-        const variationSeed = buildVariationSeed();
+        const variationSeed = buildVariationSeed(generatesModel);
         const systemInstruction = `You are an expert AI Prompt Engineer and High-End Fashion Editor for the premium brand "Zen Nail Spa."
         Your goal is to generate a highly technical image generation prompt following a strict 4-Step Pipeline:
 
@@ -1056,9 +1186,13 @@ export const generateDynamicThemePrompt = async (themeKeyOrDescription: string, 
         - Mandate "Negative Space" in the top-right 20% (Soft bokeh or clean wall texture).
         - ${identityLockText}
         - ${personRuleText}
+        - ${faceUnobstructedText}
+        - ${handAnatomyText}
         - BRANDING OVERLAY: Command the image generator to overlay "Zen Nail Spa" in a large, elegant GOLD script calligraphy font centered at the bottom.
         - CONTACT DETAILS: Directly below the salon name, mandate the overlay of this exact text in professional white sans-serif font: "(919) 316-7856" and "105 NC-54 Hwy, Ste 277A, Durham, NC 27713".
         - BACKGROUND FADE: Specify a "glass-blur fade" or "soft dark gradient" behind the text area to ensure readability.
+
+        ${NO_REAL_WORLD_BRANDING}
 
         ### STEP 4: DYNAMIC SCENE GENERATION
         Here are the specific style instructions for this image:
